@@ -1,0 +1,12 @@
+filter:
+    excluded_paths:
+        - 'bin/*'
+        - 'test/*'
+
+checks:
+    php: true
+
+tools:
+    php_code_sniffer:
+        config:
+            standard: "PSR2"
