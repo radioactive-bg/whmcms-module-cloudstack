@@ -59,9 +59,10 @@ function cloudstack2_MetaData()
     );
 }
 function cloudstack2_LoaderFunction() { 
-    return ['value' => 'Display Label'];
+    
     $cloudstackInfo = new CloudstackInfo();
     var_dump($cloudstackInfo->ListTemplates());
+    return ['value' => 'Display Label'];
     
 }
 /**
