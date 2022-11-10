@@ -94,14 +94,13 @@ function cloudstack2_ConfigOptions()
             'Loader' => 'cloudstack2_LoadTemplates',
             'Description' => 'Choose one',
             'SimpleMode' => true,
-            'Description' => '\nThe template that is going to be re-used with creation of new instances for this product',
         ),
         'ServiceOffering ID' => array(
             'Type' => 'text',
+            'Size' => '25',
             'Loader' => 'cloudstack2_LoadServiceOfferings',
             'Description' => 'Choose one',
             'SimpleMode' => true,
-            'Description' => "The service offering to be used when creating instances for this product",
         ),
     );
 }
