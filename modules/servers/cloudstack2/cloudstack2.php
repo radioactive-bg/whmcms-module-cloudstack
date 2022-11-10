@@ -81,36 +81,25 @@ function cloudstack2_LoadServiceOfferings() {
 function cloudstack2_ConfigOptions()
 {
     return array(
-        'RAM' => array(
-            'Type' => 'text',
-            'Size' => '25',
-            'Default' => '1024',
-            'Description' => 'Enter required memory in MB',
-        ),
-        'CPU' => array(
+        'Instance Prefix' => array(
             'Type' => 'text',
             'Size' => '25',
             'Default' => '1',
-            'Description' => 'Enter number of CPU cores',
-        ),
-        'Disk Size' => array(
-            'Type' => 'text',
-            'Size' => '25',
-            'Default' => '1',
-            'Description' => 'Disk Size in GB',
-            'SimpleMode' => true,
+            'Description' => 'All instances will be created with this prefix',
         ),
         'Template ID' => array(
             'Type' => 'text',
             'Loader' => 'cloudstack2_LoadTemplates',
             'Description' => 'Choose one',
             'SimpleMode' => true,
+            'Description' => 'The template that is going to be re-used with creation of new instances for this product',
         ),
         'ServiceOffering ID' => array(
             'Type' => 'text',
             'Loader' => 'cloudstack2_LoadServiceOfferings',
             'Description' => 'Choose one',
             'SimpleMode' => true,
+            'Description' => 'The service offering to be used when creating instances for this product',
         ),
     );
 }
