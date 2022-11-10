@@ -101,7 +101,7 @@ function cloudstack2_ConfigOptions()
             'Loader' => 'cloudstack2_LoadServiceOfferings',
             'Description' => 'Choose one',
             'SimpleMode' => true,
-            'Description' => "The service offering to be used when creating instances for this product|,
+            'Description' => "The service offering to be used when creating instances for this product",
         ),
     );
 }
