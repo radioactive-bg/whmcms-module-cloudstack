@@ -64,15 +64,17 @@ function cloudstack2_LoaderFunction() {
     
     $cloudstackInfo = new CloudstackInfo();
     $req = $cloudstackInfo->ListTemplates();
-    $allTemplates = json_decode($req, true);  
-    if (is_null($allTemplates)) {
-        throw new Exception('Invalid response format');
-    }
+    
+    $allTemplates = json_decode($req, true);
     logModuleCall(
         'cloudstack2',
         __FUNCTION__,
-        $cloudstackInfo->ListTemplates(),
-        $cloudstackInfo->ListTemplates());
+        $req,
+        $allTemplates);
+    if (is_null($allTemplates)) {
+        throw new Exception('Invalid response format');
+    }
+
         $list = [];
         foreach ($allTemplates as $template) {
             $list[$template['id']] = ucfirst($template['name']);
