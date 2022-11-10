@@ -63,13 +63,22 @@ function cloudstack2_MetaData()
 function cloudstack2_LoaderFunction() { 
     
     $cloudstackInfo = new CloudstackInfo();
-    var_dump($cloudstackInfo->ListTemplates());
+    $allTemplates = json_decode($cloudstackInfo->ListTemplates(), true);  
+    if (is_null($packageNames)) {
+        throw new Exception('Invalid response format');
+    }
     logModuleCall(
         'cloudstack2',
         __FUNCTION__,
         $cloudstackInfo->ListTemplates(),
         $cloudstackInfo->ListTemplates());
-    return ['value' => 'Display Label'];
+        $list = [];
+        foreach ($allTemplates as $template) {
+            $list[$template['id']] = ucfirst($template['name']);
+        }
+    
+        return $list;
+
     
 }
 /**
