@@ -78,9 +78,8 @@ function cloudstack2_LoaderFunction() {
                 __FUNCTION__,
                 $i,
                 $item);
-        }
-
-            $list[[$i]['id']] = ucfirst($template['name']);
+                $list[[$item]['id']] = ucfirst($item['name']);
+        }  
     }
     logModuleCall(
         'cloudstack2',
