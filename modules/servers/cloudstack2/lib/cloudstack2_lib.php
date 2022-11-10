@@ -14,7 +14,7 @@ class CloudstackInfo {
     }
     public function ListTemplates() {
         $client = $this->Client
-        var_dump($client->listAccounts(['name' => 'admin', 'listall' => 'true']));
+        return $client->listAccounts(['name' => 'admin', 'listall' => 'true']);
     }
 }
 ?>

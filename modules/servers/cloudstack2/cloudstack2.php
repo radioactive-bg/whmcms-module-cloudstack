@@ -60,6 +60,7 @@ function cloudstack2_MetaData()
 }
 function cloudstack2_LoaderFunction() { 
     $cloudstackInfo = new CloudstackInfo();
+    var_dump($cloudstackInfo->ListTemplates());
     return $cloudstackInfo->ListTemplates();
 }
 /**
