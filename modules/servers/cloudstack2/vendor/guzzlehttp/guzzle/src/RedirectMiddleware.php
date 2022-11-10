@@ -13,7 +13,7 @@ use Psr\Http\Message\UriInterface;
  * Request redirect middleware.
  *
  * Apply this middleware like other middleware using
- * {@see \GuzzleHttp\Middleware::redirect()}.
+ * {@see GuzzleHttp\Middleware::redirect()}.
  */
 class RedirectMiddleware
 {
@@ -94,14 +94,6 @@ class RedirectMiddleware
         $this->guardMax($request, $options);
         $nextRequest = $this->modifyRequest($request, $options, $response);
 
-        // If authorization is handled by curl, unset it if URI is cross-origin.
-        if (Psr7\UriComparator::isCrossOrigin($request->getUri(), $nextRequest->getUri()) && defined('\CURLOPT_HTTPAUTH')) {
-            unset(
-                $options['curl'][\CURLOPT_HTTPAUTH],
-                $options['curl'][\CURLOPT_USERPWD]
-            );
-        }
-
         if (isset($options['allow_redirects']['on_redirect'])) {
             call_user_func(
                 $options['allow_redirects']['on_redirect'],
@@ -149,7 +141,7 @@ class RedirectMiddleware
     }
 
     /**
-     * Check for too many redirects.
+     * Check for too many redirects
      *
      * @return void
      *
@@ -198,13 +190,7 @@ class RedirectMiddleware
             $modify['body'] = '';
         }
 
-        $uri = self::redirectUri($request, $response, $protocols);
-        if (isset($options['idn_conversion']) && ($options['idn_conversion'] !== false)) {
-            $idnOptions = ($options['idn_conversion'] === true) ? IDNA_DEFAULT : $options['idn_conversion'];
-            $uri = Utils::idnUriConvert($uri, $idnOptions);
-        }
-
-        $modify['uri'] = $uri;
+        $modify['uri'] = $this->redirectUri($request, $response, $protocols);
         Psr7\rewind_body($request);
 
         // Add the Referer header if it is told to do so and only
@@ -218,17 +204,16 @@ class RedirectMiddleware
             $modify['remove_headers'][] = 'Referer';
         }
 
-        // Remove Authorization and Cookie headers if URI is cross-origin.
-        if (Psr7\UriComparator::isCrossOrigin($request->getUri(), $modify['uri'])) {
+        // Remove Authorization header if host is different.
+        if ($request->getUri()->getHost() !== $modify['uri']->getHost()) {
             $modify['remove_headers'][] = 'Authorization';
-            $modify['remove_headers'][] = 'Cookie';
         }
 
         return Psr7\modify_request($request, $modify);
     }
 
     /**
-     * Set the appropriate URL on the request based on the location header.
+     * Set the appropriate URL on the request based on the location header
      *
      * @param RequestInterface  $request
      * @param ResponseInterface $response
@@ -236,7 +221,7 @@ class RedirectMiddleware
      *
      * @return UriInterface
      */
-    private static function redirectUri(
+    private function redirectUri(
         RequestInterface $request,
         ResponseInterface $response,
         array $protocols
