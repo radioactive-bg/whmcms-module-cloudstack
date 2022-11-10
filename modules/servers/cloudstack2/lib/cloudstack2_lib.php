@@ -18,6 +18,6 @@ class CloudstackInfo {
     }
     public function ListServiceOfferings() { 
         $client = $this->Client();
-        return $client->listServiceOfferings(['listall' => 'true'])
+        return $client->listServiceOfferings(['listall' => 'true']);
     }
 }
