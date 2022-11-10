@@ -1,7 +1,7 @@
 {
     "require": {
         "pcextreme/cloudstack": "^0.3.0",
-        "guzzlehttp/guzzle": "7.3.0"
+        "guzzlehttp/guzzle": "7.4.5"
     },
     "autoload": {
         "files": ["lib/cloudstack2_lib.php"]
