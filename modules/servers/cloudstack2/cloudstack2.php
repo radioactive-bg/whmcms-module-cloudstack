@@ -111,9 +111,10 @@ function cloudstack2_ConfigOptions()
             'Description' => 'Disk Size in GB',
         ),
         'Template ID' => array(
-            'Type' => 'dropdown',
+            'Type' => 'text',
             'Loader' => 'cloudstack2_LoaderFunction',
             'Description' => 'Choose one',
+            'SimpleMode' => true,
         ),
     );
 }
