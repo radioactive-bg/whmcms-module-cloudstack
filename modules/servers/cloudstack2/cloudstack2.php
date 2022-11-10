@@ -63,7 +63,8 @@ function cloudstack2_MetaData()
 function cloudstack2_LoaderFunction() { 
     
     $cloudstackInfo = new CloudstackInfo();
-    $allTemplates = json_decode($cloudstackInfo->ListTemplates(), true);  
+    $req = $cloudstackInfo->ListTemplates();
+    $allTemplates = json_decode($req, true);  
     if (is_null($allTemplates)) {
         throw new Exception('Invalid response format');
     }
