@@ -1,17 +1,10 @@
 {
     "require": {
         "pcextreme/cloudstack": "^0.3.0",
-        "guzzlehttp/guzzle": "~6.5.8"
+        "guzzlehttp/guzzle": "7.3.0"
     },
-    "minimum-stability" : "dev",
     "autoload": {
-        "files": ["lib/cloudstack2_lib.php","vendor/guzzlehttp/guzzle/src/functions.php"],
-        "classmap":[
-            "./vendor/guzzlehttp"
-        ],
-        "psr-4": {
-            "GuzzleHttp\\": "vendor/guzzlehttp/guzzle/src/"
-        }
+        "files": ["lib/cloudstack2_lib.php"]
  
       }
 }
