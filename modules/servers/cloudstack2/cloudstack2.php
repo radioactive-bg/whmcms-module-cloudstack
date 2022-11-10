@@ -76,7 +76,7 @@ function cloudstack2_LoaderFunction() {
             'cloudstack2',
             __FUNCTION__,
             $i,
-            $template[$i]['id']);
+            $template[$i]);
             $list[[$i]['id']] = ucfirst($template['name']);
     }
     logModuleCall(
