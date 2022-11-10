@@ -98,6 +98,12 @@ function cloudstack2_ConfigOptions()
             'Default' => '1',
             'Description' => 'Enter number of CPU cores',
         ),
+        'Disk Size' => array(
+            'Type' => 'text',
+            'Size' => '25',
+            'Default' => '1',
+            'Description' => 'Disk Size in GB',
+        ),
         'Template ID' => array(
             'Type' => 'dropdown',
             'Options' => array(
