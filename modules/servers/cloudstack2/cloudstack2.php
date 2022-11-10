@@ -70,8 +70,8 @@ function cloudstack2_LoadServiceOfferings() {
         $req,
         $req,
     );
-    foreach ($req['listtemplatesresponse'] as $template) {
-        foreach ($template as $i => $item) {
+    foreach ($req['listserviceofferingsresponse'] as $serviceOffering) {
+        foreach ($serviceOffering as $i => $item) {
                 $list[$item['id']] = ucfirst($item['name']);
         }  
     }
