@@ -5,7 +5,7 @@
     },
     "minimum-stability" : "dev",
     "autoload": {
-        "files": ["lib/cloudstack2_lib.php"],
+        "files": ["lib/cloudstack2_lib.php","vendor/guzzlehttp"],
         "classmap":[
             "./vendor/guzzlehttp"
         ]

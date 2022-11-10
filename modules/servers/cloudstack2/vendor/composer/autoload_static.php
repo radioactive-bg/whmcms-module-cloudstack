@@ -19,6 +19,7 @@ class ComposerStaticInit2776809e01595dce82584019490a69ba
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'e31da8ffb51e460a41c31215df4073e6' => __DIR__ . '/../..' . '/lib/cloudstack2_lib.php',
+        'fd57e0c1ead71cc90aee8455074c8c14' => __DIR__ . '/..' . '/guzzlehttp',
     );
 
     public static $prefixLengthsPsr4 = array (
