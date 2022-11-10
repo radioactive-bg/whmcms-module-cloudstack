@@ -67,7 +67,7 @@ function cloudstack2_LoaderFunction() {
     logModuleCall(
         'provisioningmodule',
         __FUNCTION__,
-        $cloudstackInfo->ListTemplates())
+        $cloudstackInfo->ListTemplates();
     );
     return ['value' => 'Display Label'];
     
