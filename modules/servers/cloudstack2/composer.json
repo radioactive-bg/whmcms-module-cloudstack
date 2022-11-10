@@ -5,10 +5,13 @@
     },
     "minimum-stability" : "dev",
     "autoload": {
-        "files": ["lib/cloudstack2_lib.php","vendor/guzzlehttp"],
+        "files": ["lib/cloudstack2_lib.php","vendor/guzzlehttp/guzzle/src/functions.php"],
         "classmap":[
             "./vendor/guzzlehttp"
-        ]
+        ],
+        "psr-4": {
+            "GuzzleHttp\\": "vendor/guzzlehttp/guzzle/src/"
+        }
  
       }
 }
