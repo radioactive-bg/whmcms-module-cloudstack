@@ -65,7 +65,7 @@ function cloudstack2_LoaderFunction() {
     $cloudstackInfo = new CloudstackInfo();
     $req = $cloudstackInfo->ListTemplates();
     
-    $allTemplates = json_decode($req['listtemplatesresponse'], true);
+    $allTemplates = json_decode(json_encode($req), true);
     logModuleCall(
         'cloudstack2',
         __FUNCTION__,
