@@ -18,5 +18,5 @@ return array(
     'a4a119a56e50fbb293281d9a48007e0e' => $vendorDir . '/symfony/polyfill-php80/bootstrap.php',
     '37a3dc5111fe8f707ab4c132ef1dbc62' => $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
     'e31da8ffb51e460a41c31215df4073e6' => $baseDir . '/lib/cloudstack2_lib.php',
-    'fd57e0c1ead71cc90aee8455074c8c14' => $vendorDir . '/guzzlehttp',
+    'a69db5233008cca91f9a73a1616ea507' => $vendorDir . '/guzzlehttp/guzzle/src/functions.php',
 );
