@@ -59,8 +59,9 @@ function cloudstack2_MetaData()
         'RequiresServer' => false, // Set true if module requires a server to work
     );
 }
-function cloudstack2_LoaderFunction() { return
-    return 
+function cloudstack2_LoaderFunction() { 
+    $cloudstackInfo = new CloudstackInfo();
+    $cloudstackInfo->ListTemplates();
 }
 /**
  * Define product configuration options.
