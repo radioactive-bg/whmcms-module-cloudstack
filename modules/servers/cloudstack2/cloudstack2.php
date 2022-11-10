@@ -36,6 +36,8 @@ if (!defined("WHMCS")) {
 
 // Require any libraries needed for the module to function.
 require_once __DIR__ . '/vendor/autoloader.php';
+use WHMCS\Module\Servers\cloudstack2\CloudstackInfo;
+
 //
 // Also, perform any initialization required by the service's library.
 
@@ -57,7 +59,9 @@ function cloudstack2_MetaData()
         'RequiresServer' => false, // Set true if module requires a server to work
     );
 }
-
+function cloudstack2_LoaderFunction() { return
+    return 
+}
 /**
  * Define product configuration options.
  *
@@ -106,11 +110,7 @@ function cloudstack2_ConfigOptions()
         ),
         'Template ID' => array(
             'Type' => 'dropdown',
-            'Options' => array(
-                'option1' => 'Display Value 1',
-                'option2' => 'Second Option',
-                'option3' => 'Another Option',
-            ),
+            'Loader' => 'cloudstack2_LoaderFunction',
             'Description' => 'Choose one',
         ),
     );
