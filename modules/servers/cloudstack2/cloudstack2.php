@@ -65,13 +65,9 @@ function cloudstack2_LoaderFunction() {
     $cloudstackInfo = new CloudstackInfo();
     $req = $cloudstackInfo->ListTemplates();
     
-    $allTemplates = json_decode(json_encode($req), true);
 
-    if (is_null($allTemplates)) {
-        throw new Exception('Invalid response format');
-    }
     $list = [];
-    foreach ($allTemplates as $template) {
+    foreach ($req as $template) {
             $list[$template] = ucfirst($template['name']);
     }
     logModuleCall(
