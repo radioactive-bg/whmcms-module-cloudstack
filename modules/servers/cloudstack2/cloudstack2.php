@@ -83,13 +83,14 @@ function cloudstack2_ConfigOptions()
     return array(
         'Instance Prefix' => array(
             'Type' => 'text',
-            'Size' => '25',
-            'Default' => '1',
+            'Size' => '15',
+            'Default' => 'whmcs_',
             'SimpleMode' => true,
             'Description' => 'All instances will be created with this prefix',
         ),
         'Template ID' => array(
             'Type' => 'text',
+            'Size' => '25',
             'Loader' => 'cloudstack2_LoadTemplates',
             'Description' => 'Choose one',
             'SimpleMode' => true,
@@ -100,7 +101,7 @@ function cloudstack2_ConfigOptions()
             'Loader' => 'cloudstack2_LoadServiceOfferings',
             'Description' => 'Choose one',
             'SimpleMode' => true,
-            'Description' => '\nThe service offering to be used when creating instances for this product',
+            'Description' => "The service offering to be used when creating instances for this product|,
         ),
     );
 }
