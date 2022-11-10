@@ -38,7 +38,7 @@ if (!defined("WHMCS")) {
 // require_once __DIR__ . '/path/to/library/loader.php';
 //
 // Also, perform any initialization required by the service's library.
-
+include_once(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 /**
  * Define module related meta data.
  *

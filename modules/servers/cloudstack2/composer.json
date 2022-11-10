@@ -1,5 +1,11 @@
 {
     "require": {
         "pcextreme/cloudstack": "^0.3.0"
-    }
+    },
+    "autoload": {
+        "files": ["lib/functions.php"],
+        "psr-4": {
+          "Cloudstack2\\": "lib/Cloudstack2/"
+        }
+      }
 }
