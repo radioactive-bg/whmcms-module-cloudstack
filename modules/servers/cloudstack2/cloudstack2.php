@@ -71,12 +71,15 @@ function cloudstack2_LoaderFunction() {
         throw new Exception('Invalid response format');
     }
     $list = [];
-    foreach ($allTemplates['listtemplatesresponse'] as $i => $template) {
-        logModuleCall(
-            'cloudstack2',
-            __FUNCTION__,
-            $i,
-            $template);
+    foreach ($allTemplates['listtemplatesresponse'] as $template) {
+        foreach ($template as $item) {
+            logModuleCall(
+                'cloudstack2',
+                __FUNCTION__,
+                $template,
+                $items);
+        }
+
             $list[[$i]['id']] = ucfirst($template['name']);
     }
     logModuleCall(
