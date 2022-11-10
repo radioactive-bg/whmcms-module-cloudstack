@@ -13,8 +13,7 @@ class CloudstackInfo {
         return $client;
     }
     public function ListTemplates() {
-        $client = $this->Client
+        $client = $this->Client();
         return $client->listAccounts(['name' => 'admin', 'listall' => 'true']);
     }
 }
-?>
