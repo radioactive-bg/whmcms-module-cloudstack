@@ -16,4 +16,8 @@ class CloudstackInfo {
         $client = $this->Client();
         return $client->listTemplates(['templatefilter' => 'self', 'listall' => 'true']);
     }
+    public function ListServiceOfferings() { 
+        $client = $this->Client();
+        return $client->listServiceOfferings(['listall' => 'true'])
+    }
 }

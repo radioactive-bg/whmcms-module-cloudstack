@@ -39,86 +39,54 @@ include_once(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'a
 
 use WHMCS\Module\Servers\cloudstack2\CloudstackInfo;
 
-//
-// Also, perform any initialization required by the service's library.
 
-/**
- * Define module related meta data.
- *
- * Values returned here are used to determine module related abilities and
- * settings.
- *
- * @see https://developers.whmcs.com/provisioning-modules/meta-data-params/
- *
- * @return array
- */
 function cloudstack2_MetaData()
 {
     return array(
         'DisplayName' => 'cloudstack2',
-        'APIVersion' => '1.1', // Use API Version 1.1
-        'RequiresServer' => false, // Set true if module requires a server to work
+        'APIVersion' => '1.1', 
+        'RequiresServer' => false, 
     );
 }
-function cloudstack2_LoaderFunction() { 
-    
+function cloudstack2_LoadTemplates() { 
     $cloudstackInfo = new CloudstackInfo();
     $req = $cloudstackInfo->ListTemplates();
-    
-    $allTemplates = json_decode(json_encode($req), true);
-
-    if (is_null($allTemplates)) {
-        throw new Exception('Invalid response format');
-    }
     $list = [];
-    foreach ($allTemplates['listtemplatesresponse'] as $template) {
+    foreach ($req['listtemplatesresponse'] as $template) {
         foreach ($template as $i => $item) {
                 $list[$item['id']] = ucfirst($item['name']);
         }  
     }
-    logModuleCall(
-        'cloudstack2',
-        __FUNCTION__,
-        $req,
-        $list);
     return $list;
-
-    
 }
-/**
- * Define product configuration options.
- *
- * The values you return here define the configuration options that are
- * presented to a user when configuring a product for use with the module. These
- * values are then made available in all module function calls with the key name
- * configoptionX - with X being the index number of the field from 1 to 24.
- *
- * You can specify up to 24 parameters, with field types:
- * * text
- * * password
- * * yesno
- * * dropdown
- * * radio
- * * textarea
- *
- * Examples of each and their possible configuration parameters are provided in
- * this sample function.
- *
- * @see https://developers.whmcs.com/provisioning-modules/config-options/
- *
- * @return array
- */
+function cloudstack2_LoadServiceOfferings() { 
+    $cloudstackInfo = new CloudstackInfo();
+    $req = $cloudstackInfo->ListServiceOfferings();
+    $list = [];
+    logModuleCall(
+        'provisioningmodule',
+        __FUNCTION__,
+        $params,
+        $req,
+        $req,
+    );
+    foreach ($req['listtemplatesresponse'] as $template) {
+        foreach ($template as $i => $item) {
+                $list[$item['id']] = ucfirst($item['name']);
+        }  
+    }
+    return $list;
+}
+
 function cloudstack2_ConfigOptions()
 {
     return array(
-        // a text field type allows for single line text input
         'RAM' => array(
             'Type' => 'text',
             'Size' => '25',
             'Default' => '1024',
             'Description' => 'Enter required memory in MB',
         ),
-        // a password field type allows for masked text input
         'CPU' => array(
             'Type' => 'text',
             'Size' => '25',
@@ -130,10 +98,17 @@ function cloudstack2_ConfigOptions()
             'Size' => '25',
             'Default' => '1',
             'Description' => 'Disk Size in GB',
+            'SimpleMode' => true,
         ),
         'Template ID' => array(
             'Type' => 'text',
-            'Loader' => 'cloudstack2_LoaderFunction',
+            'Loader' => 'cloudstack2_LoadTemplates',
+            'Description' => 'Choose one',
+            'SimpleMode' => true,
+        ),
+        'ServiceOffering ID' => array(
+            'Type' => 'text',
+            'Loader' => 'cloudstack2_LoadServiceOfferings',
             'Description' => 'Choose one',
             'SimpleMode' => true,
         ),
