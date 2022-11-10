@@ -1,7 +1,7 @@
 {
     "require": {
         "pcextreme/cloudstack": "^0.3.0",
-        "guzzlehttp/guzzle": "6.5.0"
+        "guzzlehttp/guzzle": "6.0.0"
     },
     "minimum-stability" : "dev",
     "autoload": {
