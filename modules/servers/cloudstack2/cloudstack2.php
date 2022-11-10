@@ -34,7 +34,6 @@ if (!defined("WHMCS")) {
     die("This file cannot be accessed directly");
 }
 
-// Require any libraries needed for the module to function.
 require_once __DIR__ . '/vendor/autoload.php';
 use WHMCS\Module\Servers\cloudstack2\CloudstackInfo;
 
@@ -61,7 +60,7 @@ function cloudstack2_MetaData()
 }
 function cloudstack2_LoaderFunction() { 
     $cloudstackInfo = new CloudstackInfo();
-    $cloudstackInfo->ListTemplates();
+    return $cloudstackInfo->ListTemplates();
 }
 /**
  * Define product configuration options.
