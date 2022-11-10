@@ -1,5 +1,8 @@
 {
     "require": {
         "pcextreme/cloudstack": "^0.3.0"
-    }
+    },
+    "autoload": {
+        "files": ["lib/cloudstack2_lib.php"]
+      }
 }
