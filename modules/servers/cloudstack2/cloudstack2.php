@@ -85,6 +85,7 @@ function cloudstack2_ConfigOptions()
             'Type' => 'text',
             'Size' => '25',
             'Default' => '1',
+            'SimpleMode' => true,
             'Description' => 'All instances will be created with this prefix',
         ),
         'Template ID' => array(
@@ -92,14 +93,14 @@ function cloudstack2_ConfigOptions()
             'Loader' => 'cloudstack2_LoadTemplates',
             'Description' => 'Choose one',
             'SimpleMode' => true,
-            'Description' => 'The template that is going to be re-used with creation of new instances for this product',
+            'Description' => '\nThe template that is going to be re-used with creation of new instances for this product',
         ),
         'ServiceOffering ID' => array(
             'Type' => 'text',
             'Loader' => 'cloudstack2_LoadServiceOfferings',
             'Description' => 'Choose one',
             'SimpleMode' => true,
-            'Description' => 'The service offering to be used when creating instances for this product',
+            'Description' => '\nThe service offering to be used when creating instances for this product',
         ),
     );
 }
