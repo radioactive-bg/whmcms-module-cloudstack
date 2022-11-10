@@ -72,7 +72,7 @@ function cloudstack2_LoaderFunction() {
     }
     $list = [];
     foreach ($allTemplates['listtemplatesresponse'] as $i => $template) {
-            $list[$allTemplates['listtemplatesresponse'][$i]['id']] = ucfirst($template['name']);
+            $list[[$i]['id']] = ucfirst($template['name']);
     }
     logModuleCall(
         'cloudstack2',
