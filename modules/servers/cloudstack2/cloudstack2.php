@@ -6,6 +6,8 @@ if (!defined("WHMCS")) {
 include_once(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 use WHMCS\Module\Servers\cloudstack2\CloudstackInfo;
 use WHMCS\Module\Servers\cloudstack2\CloudstackProvisioner;
+use WHMCS\Database\Capsule;
+
 function cloudstack2_MetaData()
 {
     return array(
@@ -61,72 +63,48 @@ function cloudstack2_LoadZones() {
 
 function cloudstack2_ConfigOptions()
 {
-    return array(
-        'Instance Prefix' => array(
-            'Type' => 'text',
-            'Size' => '10',
-            'Default' => 'whmcs_',
-            'SimpleMode' => true,
-            'Description' => 'All instances will be created with this prefix',
-        ),
-        'ServiceOffering ID' => array(
-            'Type' => 'text',
-            'Size' => '40',
-            'Loader' => 'cloudstack2_LoadServiceOfferings',
-            'SimpleMode' => true,
-        ),
-        'NetworkOffering ID' => array(
-            'Type' => 'text',
-            'Size' => '40',
-            'Loader' => 'cloudstack2_LoadNetworkOfferings',
-            'SimpleMode' => true,
-        ),
-        'Zone ID' => array(
-            'Type' => 'text',
-            'Size' => '40',
-            'Loader' => 'cloudstack2_LoadZones',
-            'SimpleMode' => true,
-        ),
-    );
+    try {
+
+        return array(
+            'Instance Prefix' => array(
+                'Type' => 'text',
+                'Size' => '10',
+                'Default' => 'whmcs_',
+                'SimpleMode' => true,
+                'Description' => 'All instances will be created with this prefix',
+            ),
+            'ServiceOffering ID' => array(
+                'Type' => 'text',
+                'Size' => '40',
+                'Loader' => 'cloudstack2_LoadServiceOfferings',
+                'SimpleMode' => true,
+            ),
+            'NetworkOffering ID' => array(
+                'Type' => 'text',
+                'Size' => '40',
+                'Loader' => 'cloudstack2_LoadNetworkOfferings',
+                'SimpleMode' => true,
+            ),
+            'Zone ID' => array(
+                'Type' => 'text',
+                'Size' => '40',
+                'Loader' => 'cloudstack2_LoadZones',
+                'SimpleMode' => true,
+            ),
+        );  
+    } catch (Exception $e) {
+        throw new \Exception($e->getMessage());
+    }
+
 }
 
-/**
- * Provision a new instance of a product/service.
- *
- * Attempt to provision a new instance of a given product/service. This is
- * called any time provisioning is requested inside of WHMCS. Depending upon the
- * configuration, this can be any of:
- * * When a new order is placed
- * * When an invoice for a new order is paid
- * * Upon manual request by an admin user
- *
- * @param array $params common module parameters
- *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
- *
- * @return string "success" or an error message
- */
+
 function cloudstack2_CreateAccount(array $params)
 {
     try {
-        // Call the service's provisioning function, using the values provided
-        // by WHMCS in `$params`.
-        //
-        // A sample `$params` array may be defined as:
-        //
-        // ```
-        // array(
-        //     'domain' => 'The domain of the service to provision',
-        //     'username' => 'The username to access the new service',
-        //     'password' => 'The password to access the new service',
-        //     'configoption1' => 'The amount of disk space to provision',
-        //     'configoption2' => 'The new services secret key',
-        //     'configoption3' => 'Whether or not to enable FTP',
-        //     ...
-        // )
-        // ```
+
        $cloudstackProvisioner = new CloudstackProvisioner();
-       $dedicated_ip = $params['model']->serviceProperties->get('Dedicated IP');
+       $dedicated_ip = $params['model']->serviceProperties->get('dedicatedip');
        logModuleCall(
         'provisioningmodule',
         __FUNCTION__,
@@ -135,10 +113,10 @@ function cloudstack2_CreateAccount(array $params)
         $params);
    
        if(is_null($dedicated_ip)) {
-        $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption2'], $params['configoption3'], $params['configoption4']);
+        $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($ipAddress['associateipaddressresponse']['id']);
-        $params['model']->serviceProperties->save(['Dedicated IP' => $ipAddress['listpublicipaddressesresponse']['ipaddress']]);
+        $params['model']->serviceProperties->save(['dedicatedip' => $ipAddress['listpublicipaddressesresponse']['ipaddress']]);
         logModuleCall(
             'provisioningmodule',
             __FUNCTION__,
