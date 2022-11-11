@@ -125,8 +125,14 @@ function cloudstack2_CreateAccount(array $params)
         // )
         // ```
        $cloudstackProvisioner = new CloudstackProvisioner($params['configoption2'], $params['configoption3'], $params['configoption4']);
-       $cloudstackProvisioner->ProvisionNewNetwork();
-
+       $resp = $cloudstackProvisioner->ProvisionNewNetwork();
+       logModuleCall(
+        'provisioningmodule',
+        __FUNCTION__,
+        $params,
+        $e->getMessage(),
+        $e->getTraceAsString()
+    );
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
         logModuleCall(
