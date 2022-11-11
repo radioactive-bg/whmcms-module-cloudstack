@@ -58,7 +58,7 @@ class CloudstackProvisioner extends CloudstackClient {
         return $resp;
 
     }
-    private function ProvisionNewIP($networkid) { 
+    public function ProvisionNewIP($networkid) { 
         $client = parent::Client();
         try {
           $ipid =  $client->associateIpAddress([
