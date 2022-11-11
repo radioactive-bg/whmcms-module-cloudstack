@@ -128,6 +128,7 @@ function cloudstack2_CreateAccount(array $params)
                     'ipAddress' => $ipAddress['listpublicipaddressesresponse']['ipaddress'],
                 ]
                 );
+                
                 Capsule::table('tblhosting')->updateOrInsert(
                     ['id' => $params['serviceid']],
                     [
