@@ -3,7 +3,7 @@ namespace WHMCS\Module\Servers\cloudstack2;
 use PCextreme\Cloudstack\Client;
 
 class CloudstackClient {
-    private function Client() { 
+    protected function Client() { 
         $client = new Client([
             'urlApi'    => 'https://on.cloudhost360.net/client/api',
             'apiKey'    => "ux1Xdgo3ZXqB0uSkLlR1TQqErhQccz5_haVLlQqC6_jL4BePA4G2KT3NNKdlgpjF-IQZShy9rvObx2WFCFJryg",
@@ -11,26 +11,26 @@ class CloudstackClient {
         ]);
         return $client;
     }
-    return $this->Client();
+    
 }
 
-class CloudstackInfo {
+class CloudstackInfo extends CloudstackClient {
     
     public function ListTemplates() {
-        $client = new CloudstackClient();
+        $client = parent::Client();
         return $client->listTemplates(['templatefilter' => 'self', 'listall' => 'true']);
     }
     
     public function ListServiceOfferings() { 
-        $client = new CloudstackClient();
+        $client = parent::Client();
         return $client->listServiceOfferings(['listall' => 'true']);
     }
     public function ListZones() {
-        $client = new CloudstackClient();
+        $client = parent::Client();
         return $client->listZones();
     }
     public function ListNetworkOfferings() {
-        $client = new CloudstackClient();
+        $client = parent::Client();
         return $client->listNetworkOfferings();
     }
     
