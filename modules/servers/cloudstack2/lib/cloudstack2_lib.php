@@ -36,14 +36,23 @@ class CloudstackInfo extends CloudstackClient {
     
 }
 class CloudstackProvisioner extends CloudstackClient {
-    private function ProvisionNewNetwork($serviceid,$networkofferingid,$zoneid) { 
-        $client = parent::Client();
+    private $serviceid;
+    private $networkofferingid;
+    private $zoneid;
+    private $client;
+    private function __construct( $serviceid, $networkofferingid, $zoneid) {
+        $this->serviceid = $serviceid;
+        $this->networkofferingid = $networkofferingid;
+        $this->zoneid = $zoneid;
+        $this->client = parent::Client();
+    }
+    public function ProvisionNewNetwork() { 
         try {
-            $resp = $client->createNetwork([
-                'displaytext' => $serviceid . '_network',
-                'name' => $serviceid . '_network',
-                'networkofferingid' => $networkofferingid,
-                'zoneid' => $zoneid
+            $resp = $this->client->createNetwork([
+                'displaytext' => $this->serviceid . '_network',
+                'name' => $this->serviceid . '_network',
+                'networkofferingid' => $this->networkofferingid,
+                'zoneid' => $this->zoneid
             ]);
         } catch (Exception $e) {
             logModuleCall(
@@ -59,10 +68,9 @@ class CloudstackProvisioner extends CloudstackClient {
 
     }
     private function ProvisionNewIP($networkid) { 
-        $client = parent::Client();
         try {
-          $ipid =  $client->associateIpAddress([
-                'networkid' => $networkid,
+          $ipid =  $this->client->associateIpAddress([
+                'networkid' => $this->networkid,
             ]);
         } catch (Exception $e) {
             logModuleCall(

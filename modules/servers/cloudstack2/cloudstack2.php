@@ -124,7 +124,14 @@ function cloudstack2_CreateAccount(array $params)
         //     ...
         // )
         // ```
-    
+       //$cloudstackProvisioner = new CloudstackProvisioner($params['']);
+       logModuleCall(
+        'provisioningmodule',
+        __FUNCTION__,
+        $params,
+        $params,
+        $params
+    );
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
         logModuleCall(
