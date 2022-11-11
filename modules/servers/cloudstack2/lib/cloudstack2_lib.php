@@ -42,6 +42,8 @@ class CloudstackInfo extends CloudstackClient {
 class CloudstackProvisioner extends CloudstackClient {
     public function ListPublicIpAddressesById($id) {
         $client = parent::Client();
+        logModuleCall('provisioningmodule',__FUNCTION__,$id,$id,$id);
+
         return $client->listPublicIpAddresses(['id' => $id]);
 
     }
