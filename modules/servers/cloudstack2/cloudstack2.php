@@ -109,7 +109,7 @@ function cloudstack2_CreateAccount(array $params)
         'provisioningmodule',
         __FUNCTION__,
         $associateIpAddress,
-        $dedicated_ip,
+        $getServer,
         $getServer);
    
        if(is_null($dedicated_ip)) {
