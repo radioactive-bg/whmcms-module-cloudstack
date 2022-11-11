@@ -40,8 +40,19 @@ function cloudstack2_LoadNetworkOfferings() {
     $cloudstackInfo = new CloudstackInfo();
     $req = $cloudstackInfo->ListNetworkOfferings();
     $list = [];
-    foreach ($req['listnetworkofferingsresponse'] as $serviceOffering) {
-        foreach ($serviceOffering as $i => $item) {
+    foreach ($req['listnetworkofferingsresponse'] as $networkOffering) {
+        foreach ($networkOffering as $i => $item) {
+                $list[$item['id']] = ucfirst($item['name']);
+        }  
+    }
+    return $list;
+}
+function cloudstack2_LoadZones() {  
+    $cloudstackInfo = new CloudstackInfo();
+    $req = $cloudstackInfo->ListZones();
+    $list = [];
+    foreach ($req['listzonesresponse'] as $zones) {
+        foreach ($zones as $i => $item) {
                 $list[$item['id']] = ucfirst($item['name']);
         }  
     }
@@ -67,6 +78,12 @@ function cloudstack2_ConfigOptions()
             'Type' => 'text',
             'Size' => '40',
             'Loader' => 'cloudstack2_LoadNetworkOfferings',
+            'SimpleMode' => true,
+        ),
+        'Zone ID' => array(
+            'Type' => 'text',
+            'Size' => '40',
+            'Loader' => 'cloudstack2_LoadZones',
             'SimpleMode' => true,
         ),
     );
@@ -107,6 +124,7 @@ function cloudstack2_CreateAccount(array $params)
         //     ...
         // )
         // ```
+    
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
         logModuleCall(

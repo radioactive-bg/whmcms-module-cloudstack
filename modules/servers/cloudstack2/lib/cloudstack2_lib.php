@@ -35,9 +35,9 @@ class CloudstackInfo extends CloudstackClient {
     }
     
 }
-class CloudstackProvisioner {
+class CloudstackProvisioner extends CloudstackClient {
     private function ProvisionNewNetwork($serviceid,$networkofferingid,$zoneid) { 
-        $client = new CloudstackClient();
+        $client = parent::Client();
         try {
             $resp = $client->createNetwork([
                 'displaytext' => $serviceid . '_network',
@@ -59,7 +59,7 @@ class CloudstackProvisioner {
 
     }
     private function ProvisionNewIP($networkid) { 
-        $client = new CloudstackClient();
+        $client = parent::Client();
         try {
           $ipid =  $client->associateIpAddress([
                 'networkid' => $networkid,
