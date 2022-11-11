@@ -132,7 +132,7 @@ function cloudstack2_CreateAccount(array $params)
         __FUNCTION__,
         $associateIpAddress,
         $dedicated_ip,
-        $resp['createnetworkresponse']['network']['id']);
+        $params);
    
        if(is_null($dedicated_ip)) {
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption2'], $params['configoption3'], $params['configoption4']);
