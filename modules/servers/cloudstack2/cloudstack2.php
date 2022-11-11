@@ -52,20 +52,20 @@ function cloudstack2_ConfigOptions()
     return array(
         'Instance Prefix' => array(
             'Type' => 'text',
-            'Size' => '15',
+            'Size' => '10',
             'Default' => 'whmcs_',
             'SimpleMode' => true,
             'Description' => 'All instances will be created with this prefix',
         ),
         'ServiceOffering ID' => array(
             'Type' => 'text',
-            'Size' => '25',
+            'Size' => '40',
             'Loader' => 'cloudstack2_LoadServiceOfferings',
             'SimpleMode' => true,
         ),
         'NetworkOffering ID' => array(
             'Type' => 'text',
-            'Size' => '25',
+            'Size' => '40',
             'Loader' => 'cloudstack2_LoadNetworkOfferings',
             'SimpleMode' => true,
         ),
