@@ -33,9 +33,18 @@ class CloudstackInfo extends CloudstackClient {
         $client = parent::Client();
         return $client->listNetworkOfferings();
     }
+    public function ListNetworks() { 
+        $client = parent::Client();
+        return $client->listNetworks();
+    }
     
 }
 class CloudstackProvisioner extends CloudstackClient {
+    public function ListPublicIpAddressesById($id) {
+        $client = parent::Client();
+        return $client->listPublicIpAddresses(['id' => $id]);
+
+    }
     public function ProvisionNewNetwork($serviceid,$networkofferingid,$zoneid) { 
         $client = parent::Client();
         try {
@@ -56,7 +65,6 @@ class CloudstackProvisioner extends CloudstackClient {
             return $e->getMessage();
         }
         return $resp;
-
     }
     public function ProvisionNewIP($networkid) { 
         $client = parent::Client();

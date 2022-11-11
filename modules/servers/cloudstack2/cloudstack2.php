@@ -125,10 +125,15 @@ function cloudstack2_CreateAccount(array $params)
         //     ...
         // )
         // ```
-        
        $cloudstackProvisioner = new CloudstackProvisioner();
-       $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption2'], $params['configoption3'], $params['configoption4']);
-       $ipAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
+       if is_null($params['model']->serviceProperties->get('Dedicated IP')) {
+        $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption2'], $params['configoption3'], $params['configoption4']);
+        $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
+        $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($ipAddress['associateipaddressresponse']['id']);
+        $params['model']->serviceProperties->save(['Dedicated IP' => $ipAddress['listpublicipaddressesresponse']['ipaddress']]);
+       }
+       
+
        logModuleCall(
         'provisioningmodule',
         __FUNCTION__,
