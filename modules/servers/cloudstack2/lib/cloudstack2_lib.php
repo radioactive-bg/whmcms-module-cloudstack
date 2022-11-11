@@ -36,29 +36,14 @@ class CloudstackInfo extends CloudstackClient {
     
 }
 class CloudstackProvisioner extends CloudstackClient {
-    private $serviceid;
-    private $networkofferingid;
-    private $zoneid;
-    private $client;
-    private function __construct( $serviceid, $networkofferingid, $zoneid) {
-        $this->serviceid = $serviceid;
-        $this->networkofferingid = $networkofferingid;
-        $this->zoneid = $zoneid;
-        $this->client = parent::Client();
-    }
-    public function ProvisionNewNetwork() { 
+    public function ProvisionNewNetwork($serviceid,$networkofferingid,$zoneid) { 
+        $client = parent::Client();
         try {
-            logModuleCall(
-                'provisioningmodule',
-                __FUNCTION__,
-                $serviceid,
-                $networkofferingid
-            );
-            $resp = $this->client->createNetwork([
-                'displaytext' => $this->serviceid . '_network',
-                'name' => $this->serviceid . '_network',
-                'networkofferingid' => $this->networkofferingid,
-                'zoneid' => $this->zoneid
+            $resp = $client->createNetwork([
+                'displaytext' => $serviceid . '_network',
+                'name' => $serviceid . '_network',
+                'networkofferingid' => $networkofferingid,
+                'zoneid' => $zoneid
             ]);
         } catch (Exception $e) {
             logModuleCall(
@@ -74,9 +59,10 @@ class CloudstackProvisioner extends CloudstackClient {
 
     }
     private function ProvisionNewIP($networkid) { 
+        $client = parent::Client();
         try {
-          $ipid =  $this->client->associateIpAddress([
-                'networkid' => $this->networkid,
+          $ipid =  $client->associateIpAddress([
+                'networkid' => $networkid,
             ]);
         } catch (Exception $e) {
             logModuleCall(
