@@ -48,6 +48,12 @@ class CloudstackProvisioner extends CloudstackClient {
     }
     public function ProvisionNewNetwork() { 
         try {
+            logModuleCall(
+                'provisioningmodule',
+                __FUNCTION__,
+                $serviceid,
+                $networkofferingid
+            );
             $resp = $this->client->createNetwork([
                 'displaytext' => $this->serviceid . '_network',
                 'name' => $this->serviceid . '_network',
