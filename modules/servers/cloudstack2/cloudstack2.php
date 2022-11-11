@@ -132,7 +132,7 @@ function cloudstack2_CreateAccount(array $params)
        logModuleCall(
         'provisioningmodule',
         __FUNCTION__,
-        $params,
+        $ipAddress,
         $ipAddress,
         $resp['createnetworkresponse']['network']['id']
     );
