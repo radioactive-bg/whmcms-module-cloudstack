@@ -6,7 +6,7 @@ if (!defined("WHMCS")) {
 include_once(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 use WHMCS\Module\Servers\cloudstack2\CloudstackInfo;
 use WHMCS\Module\Servers\cloudstack2\CloudstackProvisioner;
-use WHMCS\Service\Service;
+use WHMCS\Database\Capsule;
 
 
 function cloudstack2_MetaData()
@@ -65,7 +65,16 @@ function cloudstack2_LoadZones() {
 function cloudstack2_ConfigOptions()
 {
     try {
-
+        if (!Capsule::schema()->hasTable('mod_cloudstack2')) {
+            Capsule::schema()->create('mod_cloudstack2', function ($table) {
+                $table->increments('id');
+                $table->string('serviceId');
+                $table->string('serverId');
+                $table->string('networkId');
+                $table->string('accountId');
+                $table->string('ipAddress');
+            });
+        }
         return array(
             'Instance Prefix' => array(
                 'Type' => 'text',
@@ -103,36 +112,32 @@ function cloudstack2_ConfigOptions()
 function cloudstack2_CreateAccount(array $params)
 {
     try {
-       $getServer = WHMCS\Service\Service::where("server", "=", $params['serverid'])->where("userid", "=", $params['userid'])->where("orderid","=",$params['orderid'])->first();
        $cloudstackProvisioner = new CloudstackProvisioner();
-       $dedicated_ip = $params['model']->serviceProperties->get('dedicatedip');
-       logModuleCall(
-        'provisioningmodule',
-        __FUNCTION__,
-        $associateIpAddress,
-        $getServer,
-        $getServer);
-   
-       if(is_null($dedicated_ip)) {
+       $server_network_id = Capsule::table('mod_cloudstack2')->where('serviceId',"=", $params['serviceid'])->where('accountId' = $params['accountid'])->first(); 
+       if(is_null($server_network_id)){
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['serviceid'], $params['configoption3'], $params['configoption4']);
+        $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($ipAddress['associateipaddressresponse']['id']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($ipAddress['associateipaddressresponse']['id']);
-        $params['model']->serviceProperties->save(['dedicatedip' => $ipAddress['listpublicipaddressesresponse']['ipaddress']]);
-        logModuleCall(
-            'provisioningmodule',
-            __FUNCTION__,
-            $associateIpAddress,
-            $ipAddress,
-            $resp['createnetworkresponse']['network']['id']);
+        logModuleCall('provisioningmodule',__FUNCTION__,$associateIpAddress,$getServer,$getServer);
+            Capsule::table('mod_cloudstack2')->updateOrInsert(
+                ['serviceId' => $params['serviceid']],
+                [
+                    'accountId' => $params['accountid'],
+                    'networkId' => $resp['createnetworkresponse']['network']['id'],
+                    'ipAddress' => $ipAddress['listpublicipaddressesresponse']['ipaddress'],
+                ]
+                );
+                Capsule::table('tblhosting')->updateOrInsert(
+                    ['id' => $params['serviceid']],
+                    [
+                        'username' => 'ubuntu',
+                        'dedicatedip' => $ipAddress['listpublicipaddressesresponse']['ipaddress'],
+                    ]
+                );
        }
        
-
-       logModuleCall(
-        'provisioningmodule',
-        __FUNCTION__,
-        $ipAddress,
-        $ipAddress,
-        $resp['createnetworkresponse']['network']['id']
+       
     );
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
