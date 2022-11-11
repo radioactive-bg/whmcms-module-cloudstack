@@ -103,7 +103,7 @@ function cloudstack2_ConfigOptions()
 function cloudstack2_CreateAccount(array $params)
 {
     try {
-       $getServer = WHMCS\Service\Service::where("server", "=", $params['serverid'])->where("userid", "=", $params['userid'])->where("orderid","=",$params['orderid'])->get();
+       $getServer = WHMCS\Service\Service::where("server", "=", $params['serverid'])->where("userid", "=", $params['userid'])->where("orderid","=",$params['orderid'])->first();
        $cloudstackProvisioner = new CloudstackProvisioner();
        $dedicated_ip = $params['model']->serviceProperties->get('dedicatedip');
        logModuleCall(
