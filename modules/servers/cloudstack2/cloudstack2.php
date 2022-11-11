@@ -128,7 +128,7 @@ function cloudstack2_CreateAccount(array $params)
         
        $cloudstackProvisioner = new CloudstackProvisioner();
        $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption2'], $params['configoption3'], $params['configoption4']);
-       $ipAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id'])
+       $ipAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
        logModuleCall(
         'provisioningmodule',
         __FUNCTION__,
