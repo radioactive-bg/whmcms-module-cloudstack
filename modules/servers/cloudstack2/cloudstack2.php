@@ -125,7 +125,7 @@ function cloudstack2_CreateAccount(array $params)
                 [
                     'accountId' => $params['accountid'],
                     'networkId' => $resp['createnetworkresponse']['network']['id'],
-                    'ipAddress' => $ipAddress['listpublicipaddressesresponse']['ipaddress'],
+                    'ipAddress' => $ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['ipaddress'],
                 ]
                 );
                 
@@ -133,7 +133,7 @@ function cloudstack2_CreateAccount(array $params)
                     ['id' => $params['serviceid']],
                     [
                         'username' => 'ubuntu',
-                        'dedicatedip' => $ipAddress['listpublicipaddressesresponse']['ipaddress'],
+                        'dedicatedip' => $ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['ipaddress'],
                     ]
                 );
        }
