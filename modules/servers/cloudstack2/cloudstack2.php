@@ -6,7 +6,7 @@ if (!defined("WHMCS")) {
 include_once(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 use WHMCS\Module\Servers\cloudstack2\CloudstackInfo;
 use WHMCS\Module\Servers\cloudstack2\CloudstackProvisioner;
-use WHMCS\Database\Capsule;
+
 
 function cloudstack2_MetaData()
 {
@@ -102,7 +102,7 @@ function cloudstack2_ConfigOptions()
 function cloudstack2_CreateAccount(array $params)
 {
     try {
-
+       $getServer = WHMCS\Service\Service::where("server", "=", $params['serverid'])->where("serviceid", "=", $params['serviceid'])->get();
        $cloudstackProvisioner = new CloudstackProvisioner();
        $dedicated_ip = $params['model']->serviceProperties->get('dedicatedip');
        logModuleCall(
@@ -110,7 +110,7 @@ function cloudstack2_CreateAccount(array $params)
         __FUNCTION__,
         $associateIpAddress,
         $dedicated_ip,
-        $params);
+        $getServer);
    
        if(is_null($dedicated_ip)) {
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['serviceid'], $params['configoption3'], $params['configoption4']);
