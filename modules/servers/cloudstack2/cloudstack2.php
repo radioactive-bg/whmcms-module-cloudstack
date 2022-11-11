@@ -31,7 +31,7 @@ function cloudstack2_LoadServiceOfferings() {
     $list = [];
     foreach ($req['listserviceofferingsresponse'] as $serviceOffering) {
         foreach ($serviceOffering as $i => $item) {
-                $list[$item['id']] = ucfirst($item['name'] . '| CPU:' $item['writethroughcpunumberthe ']);
+                $list[$item['id']] = ucfirst($item['name'] . '| CPU:' . $item['writethroughcpunumberthe ']);
         }  
     }
     return $list;
