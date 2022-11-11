@@ -118,6 +118,7 @@ function cloudstack2_CreateAccount(array $params)
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['serviceid'], $params['configoption3'], $params['configoption4']);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($ipAddress['associateipaddressresponse']['id']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
+        logModuleCall('provisioningmodule',__FUNCTION__,$associateIpAddress,$getServer,$getServer);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($ipAddress['associateipaddressresponse']['id']);
         logModuleCall('provisioningmodule',__FUNCTION__,$associateIpAddress,$getServer,$getServer);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
