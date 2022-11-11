@@ -1,44 +1,10 @@
 <?php
-/**
- * WHMCS SDK Sample Provisioning Module
- *
- * Provisioning Modules, also referred to as Product or Server Modules, allow
- * you to create modules that allow for the provisioning and management of
- * products and services in WHMCS.
- *
- * This sample file demonstrates how a provisioning module for WHMCS should be
- * structured and exercises all supported functionality.
- *
- * Provisioning Modules are stored in the /modules/servers/ directory. The
- * module name you choose must be unique, and should be all lowercase,
- * containing only letters & numbers, always starting with a letter.
- *
- * Within the module itself, all functions must be prefixed with the module
- * filename, followed by an underscore, and then the function name. For this
- * example file, the filename is "provisioningmodule" and therefore all
- * functions begin "cloudstack2_".
- *
- * If your module or third party API does not support a given function, you
- * should not define that function within your module. Only the _ConfigOptions
- * function is required.
- *
- * For more information, please refer to the online documentation.
- *
- * @see https://developers.whmcs.com/provisioning-modules/
- *
- * @copyright Copyright (c) WHMCS Limited 2017
- * @license https://www.whmcs.com/license/ WHMCS Eula
- */
 
 if (!defined("WHMCS")) {
     die("This file cannot be accessed directly");
 }
-
-#require_once __DIR__ . '/vendor/autoload.php';
 include_once(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
-
 use WHMCS\Module\Servers\cloudstack2\CloudstackInfo;
-
 
 function cloudstack2_MetaData()
 {
@@ -63,13 +29,6 @@ function cloudstack2_LoadServiceOfferings() {
     $cloudstackInfo = new CloudstackInfo();
     $req = $cloudstackInfo->ListServiceOfferings();
     $list = [];
-    logModuleCall(
-        'provisioningmodule',
-        __FUNCTION__,
-        $params,
-        $req,
-        $req,
-    );
     foreach ($req['listserviceofferingsresponse'] as $serviceOffering) {
         foreach ($serviceOffering as $i => $item) {
                 $list[$item['id']] = ucfirst($item['name']);
@@ -77,7 +36,17 @@ function cloudstack2_LoadServiceOfferings() {
     }
     return $list;
 }
-
+function cloudstack2_LoadNetworkOfferings() {  
+    $cloudstackInfo = new CloudstackInfo();
+    $req = $cloudstackInfo->ListNetworkOfferings();
+    $list = [];
+    foreach ($req['listnetworkofferingsresponse'] as $serviceOffering) {
+        foreach ($serviceOffering as $i => $item) {
+                $list[$item['id']] = ucfirst($item['name']);
+        }  
+    }
+    return $list;
+}
 function cloudstack2_ConfigOptions()
 {
     return array(
@@ -88,18 +57,16 @@ function cloudstack2_ConfigOptions()
             'SimpleMode' => true,
             'Description' => 'All instances will be created with this prefix',
         ),
-        'Template ID' => array(
-            'Type' => 'text',
-            'Size' => '25',
-            'Loader' => 'cloudstack2_LoadTemplates',
-            'Description' => 'Choose one',
-            'SimpleMode' => true,
-        ),
         'ServiceOffering ID' => array(
             'Type' => 'text',
             'Size' => '25',
             'Loader' => 'cloudstack2_LoadServiceOfferings',
-            'Description' => 'Choose one',
+            'SimpleMode' => true,
+        ),
+        'NetworkOffering ID' => array(
+            'Type' => 'text',
+            'Size' => '25',
+            'Loader' => 'cloudstack2_LoadNetworkOfferings',
             'SimpleMode' => true,
         ),
     );
