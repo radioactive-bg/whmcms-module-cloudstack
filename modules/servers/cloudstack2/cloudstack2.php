@@ -58,6 +58,7 @@ function cloudstack2_LoadZones() {
     }
     return $list;
 }
+
 function cloudstack2_ConfigOptions()
 {
     return array(
@@ -132,7 +133,7 @@ function cloudstack2_CreateAccount(array $params)
         __FUNCTION__,
         $params,
         $params['configoption2'],
-        $resp
+        $resp['createnetworkresponse']['network']['id']
     );
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
