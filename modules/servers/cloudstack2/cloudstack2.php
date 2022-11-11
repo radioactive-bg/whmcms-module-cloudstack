@@ -5,7 +5,7 @@ if (!defined("WHMCS")) {
 }
 include_once(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 use WHMCS\Module\Servers\cloudstack2\CloudstackInfo;
-
+use WHMCS\Module\Servers\cloudstack2\CloudstackProvisioner;
 function cloudstack2_MetaData()
 {
     return array(

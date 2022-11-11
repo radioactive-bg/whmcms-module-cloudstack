@@ -11,6 +11,7 @@ class CloudstackClient {
         ]);
         return $client;
     }
+    return $this->Client();
 }
 
 class CloudstackInfo {
