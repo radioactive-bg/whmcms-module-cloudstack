@@ -196,8 +196,9 @@ function cloudstack2_TerminateAccount(array $params)
 
         $cloudstackProvisioner = new CloudstackProvisioner();
         $server_network_id = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
+        logModuleCall('provisioningmodule',__FUNCTION__,$server_network_id,$server_network_id,$server_network_id);
         $resp = $cloudstackProvisioner->DeleteNetwork($server_network_id);
-        logModuleCall('provisioningmodule',__FUNCTION__,$server_network_id,$server_network_id,$resp);
+        
         if($resp['deletenetworkresponse']['success'] == "true") {
             Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->delete();
         } 
