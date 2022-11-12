@@ -199,8 +199,15 @@ function cloudstack2_TerminateAccount(array $params)
         logModuleCall('provisioningmodule',__FUNCTION__,$server_network_id,$server_network_id,$server_network_id->networkId);
         $resp = $cloudstackProvisioner->DeleteNetwork($server_network_id->networkId);
         logModuleCall('provisioningmodule',__FUNCTION__,$server_network_id,$resp,$resp);
-        if($resp['deletenetworkresponse']['success'] == "true") {
+        if($resp['deletenetworkresponse']['jobid']) {
             Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->delete();
+            Capsule::table('tblhosting')->updateOrInsert(
+                ['id' => $params['serviceid']],
+                [
+                    'username' => 'ubuntu',
+                    'dedicatedip' => "",
+                ]
+            );
         } 
          
     } catch (Exception $e) {
