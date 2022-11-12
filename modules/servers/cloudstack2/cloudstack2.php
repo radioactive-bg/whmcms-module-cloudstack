@@ -9,8 +9,7 @@ use WHMCS\Module\Servers\cloudstack2\CloudstackProvisioner;
 use WHMCS\Database\Capsule;
 
 
-function cloudstack2_MetaData()
-{
+function cloudstack2_MetaData() {
     return array(
         'DisplayName' => 'cloudstack2',
         'APIVersion' => '1.1', 
@@ -61,9 +60,7 @@ function cloudstack2_LoadZones() {
     }
     return $list;
 }
-
-function cloudstack2_ConfigOptions()
-{
+function cloudstack2_ConfigOptions() {
     try {
         if (!Capsule::schema()->hasTable('mod_cloudstack2')) {
             Capsule::schema()->create('mod_cloudstack2', function ($table) {
@@ -108,9 +105,7 @@ function cloudstack2_ConfigOptions()
 
 }
 
-
-function cloudstack2_CreateAccount(array $params)
-{
+function cloudstack2_CreateAccount(array $params) {
     try {
        $cloudstackProvisioner = new CloudstackProvisioner();
        $server_network_id = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
@@ -156,21 +151,7 @@ function cloudstack2_CreateAccount(array $params)
     return 'success';
 }
 
-/**
- * Suspend an instance of a product/service.
- *
- * Called when a suspension is requested. This is invoked automatically by WHMCS
- * when a product becomes overdue on payment or can be called manually by admin
- * user.
- *
- * @param array $params common module parameters
- *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
- *
- * @return string "success" or an error message
- */
-function cloudstack2_SuspendAccount(array $params)
-{
+function cloudstack2_SuspendAccount(array $params) {
     try {
         // Call the service's suspend function, using the values provided by
         // WHMCS in `$params`.
@@ -189,22 +170,7 @@ function cloudstack2_SuspendAccount(array $params)
 
     return 'success';
 }
-
-/**
- * Un-suspend instance of a product/service.
- *
- * Called when an un-suspension is requested. This is invoked
- * automatically upon payment of an overdue invoice for a product, or
- * can be called manually by admin user.
- *
- * @param array $params common module parameters
- *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
- *
- * @return string "success" or an error message
- */
-function cloudstack2_UnsuspendAccount(array $params)
-{
+function cloudstack2_UnsuspendAccount(array $params) {
     try {
         // Call the service's unsuspend function, using the values provided by
         // WHMCS in `$params`.
@@ -224,23 +190,17 @@ function cloudstack2_UnsuspendAccount(array $params)
     return 'success';
 }
 
-/**
- * Terminate instance of a product/service.
- *
- * Called when a termination is requested. This can be invoked automatically for
- * overdue products if enabled, or requested manually by an admin user.
- *
- * @param array $params common module parameters
- *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
- *
- * @return string "success" or an error message
- */
 function cloudstack2_TerminateAccount(array $params)
 {
     try {
-        // Call the service's terminate function, using the values provided by
-        // WHMCS in `$params`.
+
+        $cloudstackProvisioner = new CloudstackProvisioner();
+        $server_network_id = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
+        $resp = $cloudstackProvisioner->DeleteNetwork($server_network_id);
+        if($resp['deletenetworkresponse']['success'] == "true") {
+            Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->delete();
+        } 
+         
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
         logModuleCall(

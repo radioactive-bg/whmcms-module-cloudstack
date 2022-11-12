@@ -68,6 +68,24 @@ class CloudstackProvisioner extends CloudstackClient {
         }
         return $resp;
     }
+    public function DeleteNetwork($networkid) {
+        $client = parent::Client();
+        try {
+            $resp = $client->deleteNetwork([
+                'id' => $networkid
+            ]);
+        } catch (Exception $e) {
+            logModuleCall(
+                'provisioningmodule',
+                __FUNCTION__,
+                $params,
+                $e->getMessage(),
+                $e->getTraceAsString()
+            );
+            return $e->getMessage();
+        }
+        return $resp;
+    }
     public function ProvisionNewIP($networkid) { 
         $client = parent::Client();
         try {
