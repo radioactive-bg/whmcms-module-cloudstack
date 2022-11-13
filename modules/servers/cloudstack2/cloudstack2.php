@@ -118,7 +118,6 @@ function cloudstack2_ConfigOptions() {
 function cloudstack2_CreateAccount(array $params) {
     try {
        $cloudstackProvisioner = new CloudstackProvisioner();
-       logModuleCall('cloudstack2',__FUNCTION__,$params,$params,$params);
        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
        if(is_null($server_stat->networkId)){
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['serviceid'], $params['configoption3'], $params['configoption4']);
@@ -153,8 +152,8 @@ function cloudstack2_CreateAccount(array $params) {
                 ]
                 );
        }
-       $resp = $cloudstackProvisioner->ProvisionNewVirtualMachine($server_stat->serviceId, $params['configoptions']['template'], $params['configoption3'], $associateIpAddress['associateipaddressresponse']['id'], $params['configoption4']);
-       logModuleCall('provisioningmodule',__FUNCTION__,$resp,$resp,$resp);    
+       $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($server_stat->serviceId, $params['configoptions']['template'], $params['configoption3'], $associateIpAddress['associateipaddressresponse']['id'], $params['configoption4']);
+       logModuleCall('ccl3',__FUNCTION__,$newVM,$newVM,$newVM);    
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
         logModuleCall(
