@@ -191,13 +191,13 @@ class CloudstackProvisioner extends CloudstackClient {
             }
             return $resp;
     }
-    public function ProvisionPortForwardingRule($ipaddressid,$virtualmachineid) {
+    public function ProvisionPortForwardingRule($ipaddressid,$virtualmachineid,$proto) {
         $client = parent::Client();
         try {
             $resp = $client->createPortForwardingRule([
                 'ipaddressid' => $ipaddressid,
                 'virtualmachineid' => $virtualmachineid,
-                'protocol' => 'tcp',
+                'protocol' => $proto,
                 'publicport' => '1',
                 'publicendport' => '65535',
                 'privateport' => '1',

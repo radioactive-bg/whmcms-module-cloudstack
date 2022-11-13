@@ -153,8 +153,19 @@ function cloudstack2_CreateAccount(array $params) {
                 );
        }
        $updated_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
-       $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['configoption1'],$params['serviceid'],$params['configoptions']['Template'],$params['configoption4'],$updated_stat->networkId, $updated_stat->ipAddressId,$params['configoption2']);
-       logModuleCall('ccl4',__FUNCTION__,$newVM,$newVM,$newVM);
+       if($updated_stat->serverId == "") {
+        $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['configoption1'],$params['serviceid'],$params['configoptions']['Template'],$params['configoption4'],$updated_stat->networkId, $updated_stat->ipAddressId,$params['configoption2']);
+        $portForwardingTCP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId, $newVM['deployvirtualmachineresponse']['id'], 'TCP');
+        $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId, $newVM['deployvirtualmachineresponse']['id'], 'UDP');
+        Capsule::table('mod_cloudstack2')->updateOrInsert(
+            ['serviceId' => $params['serviceid']],
+            [
+                'serverId' => $newVM['deployvirtualmachineresponse']['id'],
+                'portforwardTCPId' => $portForwarding['createportforwardingruleresponse']['id'],
+                'portforwardUDPId' => $portForwarding['createportforwardingruleresponse']['id'],
+            ]
+            );
+       }
 
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
@@ -168,7 +179,6 @@ function cloudstack2_CreateAccount(array $params) {
 
         return $e->getMessage();
     }
-
     return 'success';
 }
 
@@ -216,10 +226,9 @@ function cloudstack2_TerminateAccount(array $params)
     try {
 
         $cloudstackProvisioner = new CloudstackProvisioner();
-        $server_network_id = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
-        logModuleCall('provisioningmodule',__FUNCTION__,$server_network_id,$server_network_id,$server_network_id->networkId);
-        $resp = $cloudstackProvisioner->DeleteNetwork($server_network_id->networkId);
-        logModuleCall('provisioningmodule',__FUNCTION__,$server_network_id,$resp,$resp);
+        $server_status = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
+        $destroyVmResponse = $cloudstackProvisioner->DeleteVirtualMachine($server_status->serverId);
+        $resp = $cloudstackProvisioner->DeleteNetwork($server_status->networkId);
         if($resp['deletenetworkresponse']['jobid']) {
             Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->delete();
             Capsule::table('tblhosting')->updateOrInsert(
@@ -232,39 +241,14 @@ function cloudstack2_TerminateAccount(array $params)
         } 
          
     } catch (Exception $e) {
-        // Record the error in WHMCS's module log.
-        logModuleCall(
-            'provisioningmodule',
-            __FUNCTION__,
-            $params,
-            $e->getMessage(),
-            $e->getTraceAsString()
-        );
-
+        logModuleCall('provisioningmodule',__FUNCTION__,$params,$e->getMessage(),$e->getTraceAsString());
         return $e->getMessage();
     }
 
     return 'success';
 }
 
-/**
- * Change the password for an instance of a product/service.
- *
- * Called when a password change is requested. This can occur either due to a
- * client requesting it via the client area or an admin requesting it from the
- * admin side.
- *
- * This option is only available to client end users when the product is in an
- * active status.
- *
- * @param array $params common module parameters
- *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
- *
- * @return string "success" or an error message
- */
-function cloudstack2_ChangePassword(array $params)
-{
+function cloudstack2_ChangePassword(array $params){
     try {
         // Call the service's change password function, using the values
         // provided by WHMCS in `$params`.
@@ -292,25 +276,7 @@ function cloudstack2_ChangePassword(array $params)
 
     return 'success';
 }
-
-/**
- * Upgrade or downgrade an instance of a product/service.
- *
- * Called to apply any change in product assignment or parameters. It
- * is called to provision upgrade or downgrade orders, as well as being
- * able to be invoked manually by an admin user.
- *
- * This same function is called for upgrades and downgrades of both
- * products and configurable options.
- *
- * @param array $params common module parameters
- *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
- *
- * @return string "success" or an error message
- */
-function cloudstack2_ChangePackage(array $params)
-{
+function cloudstack2_ChangePackage(array $params){
     try {
         // Call the service's change password function, using the values
         // provided by WHMCS in `$params`.
@@ -339,21 +305,7 @@ function cloudstack2_ChangePackage(array $params)
 
     return 'success';
 }
-
-/**
- * Renew an instance of a product/service.
- *
- * Attempt to renew an existing instance of a given product/service. This is
- * called any time a product/service invoice has been paid. 
- *
- * @param array $params common module parameters
- *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
- *
- * @return string "success" or an error message
- */
-function cloudstack2_Renew(array $params)
-{
+function cloudstack2_Renew(array $params){
     try {
         // Call the service's provisioning function, using the values provided
         // by WHMCS in `$params`.
@@ -386,26 +338,7 @@ function cloudstack2_Renew(array $params)
 
     return 'success';
 }
-
-/**
- * Test connection with the given server parameters.
- *
- * Allows an admin user to verify that an API connection can be
- * successfully made with the given configuration parameters for a
- * server.
- *
- * When defined in a module, a Test Connection button will appear
- * alongside the Server Type dropdown when adding or editing an
- * existing server.
- *
- * @param array $params common module parameters
- *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
- *
- * @return array
- */
-function cloudstack2_TestConnection(array $params)
-{
+function cloudstack2_TestConnection(array $params){
     try {
         // Call the service's connection test function.
 
@@ -431,35 +364,14 @@ function cloudstack2_TestConnection(array $params)
     );
 }
 
-/**
- * Additional actions an admin user can invoke.
- *
- * Define additional actions that an admin user can perform for an
- * instance of a product/service.
- *
- * @see cloudstack2_buttonOneFunction()
- *
- * @return array
- */
-function cloudstack2_AdminCustomButtonArray()
-{
-    return array(
-        "Button 1 Display Value" => "buttonOneFunction",
-        "Button 2 Display Value" => "buttonTwoFunction",
-    );
-}
+//function cloudstack2_AdminCustomButtonArray()
+//{
+//    return array(
+//        "Button 1 Display Value" => "buttonOneFunction",
+//        "Button 2 Display Value" => "buttonTwoFunction",
+//    );
+//}
 
-/**
- * Additional actions a client user can invoke.
- *
- * Define additional actions a client user can perform for an instance of a
- * product/service.
- *
- * Any actions you define here will be automatically displayed in the available
- * list of actions within the client area.
- *
- * @return array
- */
 function cloudstack2_ClientAreaCustomButtonArray()
 {
     return array(
@@ -467,22 +379,6 @@ function cloudstack2_ClientAreaCustomButtonArray()
         "Action 2 Display Value" => "actionTwoFunction",
     );
 }
-
-/**
- * Custom function for performing an additional action.
- *
- * You can define an unlimited number of custom functions in this way.
- *
- * Similar to all other module call functions, they should either return
- * 'success' or an error message to be displayed.
- *
- * @param array $params common module parameters
- *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
- * @see cloudstack2_AdminCustomButtonArray()
- *
- * @return string "success" or an error message
- */
 function cloudstack2_buttonOneFunction(array $params)
 {
     try {
@@ -504,21 +400,6 @@ function cloudstack2_buttonOneFunction(array $params)
     return 'success';
 }
 
-/**
- * Custom function for performing an additional action.
- *
- * You can define an unlimited number of custom functions in this way.
- *
- * Similar to all other module call functions, they should either return
- * 'success' or an error message to be displayed.
- *
- * @param array $params common module parameters
- *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
- * @see cloudstack2_ClientAreaCustomButtonArray()
- *
- * @return string "success" or an error message
- */
 function cloudstack2_actionOneFunction(array $params)
 {
     try {
@@ -540,22 +421,6 @@ function cloudstack2_actionOneFunction(array $params)
     return 'success';
 }
 
-/**
- * Admin services tab additional fields.
- *
- * Define additional rows and fields to be displayed in the admin area service
- * information and management page within the clients profile.
- *
- * Supports an unlimited number of additional field labels and content of any
- * type to output.
- *
- * @param array $params common module parameters
- *
- * @see https://developers.whmcs.com/provisioning-modules/module-parameters/
- * @see cloudstack2_AdminServicesTabFieldsSave()
- *
- * @return array
- */
 function cloudstack2_AdminServicesTabFields(array $params)
 {
     try {
