@@ -120,7 +120,7 @@ function cloudstack2_CreateAccount(array $params) {
        $cloudstackProvisioner = new CloudstackProvisioner();
        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
        if(is_null($server_stat->networkId)){
-        $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['serviceid'], $params['configoption3'], $params['configoption4']);
+        $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
         $egressFirewallTCP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'TCP');
@@ -153,11 +153,11 @@ function cloudstack2_CreateAccount(array $params) {
                 );
        }
        $updated_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
-       logModuleCall('ccl3',__FUNCTION__,$params['serviceid'],$params['serviceid'],$params['configoptions']);    
-       logModuleCall('ccl3',__FUNCTION__,$newVM,$params['serviceId'],$params['configoptions']['Template']);    
-       //ProvisionNewVirtualMachine($serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid) 
-       $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['serviceid'],$params['configoptions']['Template'],$params['configoption4'],$updated_stat->networkId, $updated_stat->ipAddressId,$params['configoption2']);
-       logModuleCall('ccl3',__FUNCTION__,$newVM,$newVM,$newVM);    
+       if(is_null($updated_stat->serverId)) {
+        $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['configoption1'],$params['serviceid'],$params['configoptions']['Template'],$params['configoption4'],$updated_stat->networkId, $updated_stat->ipAddressId,$params['configoption2']);
+        logModuleCall('ccl3',__FUNCTION__,$newVM,$newVM,$newVM);    
+       }
+
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
         logModuleCall(

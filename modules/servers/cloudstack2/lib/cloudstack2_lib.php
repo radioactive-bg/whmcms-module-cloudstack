@@ -45,11 +45,11 @@ class CloudstackProvisioner extends CloudstackClient {
         return $client->listPublicIpAddresses(['id' => $id]);
 
     }
-    public function ProvisionNewNetwork($serviceid,$networkofferingid,$zoneid) { 
+    public function ProvisionNewNetwork($prefix,$serviceid,$networkofferingid,$zoneid) { 
         $client = parent::Client();
         try {
             $resp = $client->createNetwork([
-                'displaytext' => $serviceid . '_network',
+                'displaytext' => $prefix . '-' . $serviceid . '-network',
                 'name' => $serviceid . '_network',
                 'networkofferingid' => $networkofferingid,
                 'zoneid' => $zoneid
@@ -168,12 +168,12 @@ class CloudstackProvisioner extends CloudstackClient {
             }
             return $resp;
     }
-    public function ProvisionNewVirtualMachine($serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid) {
+    public function ProvisionNewVirtualMachine($prefix, $serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid) {
         $client = parent::Client();
         try {
             $resp = $client->deployVirtualMachine([
-                'displayname' => $serviceid . '_vm',
-                'name' => $serviceid . '_vm',
+                'displayname' => $prefix . '-' . $serviceid . '-vm',
+                'name' => $prefix . '-' . $serviceid . '-vm',
                 'templateid' => $templateid,
                 'zoneid' => $zoneid,
                 'networkids' => $networkid,
