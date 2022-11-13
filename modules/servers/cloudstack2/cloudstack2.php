@@ -152,6 +152,7 @@ function cloudstack2_CreateAccount(array $params) {
                 ]
                 );
        }
+       logModuleCall('ccl3',__FUNCTION__,$newVM,$params['serviceid'],$params['configoptions']);    
        logModuleCall('ccl3',__FUNCTION__,$newVM,$params['serviceId'],$params['configoptions']['template']);    
 
        $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['serviceId'], $params['configoptions']['template'], $params['configoption3'], $associateIpAddress['associateipaddressresponse']['id'], $params['configoption4']);
