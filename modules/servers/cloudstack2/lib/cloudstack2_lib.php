@@ -84,11 +84,11 @@ class CloudstackProvisioner extends CloudstackClient {
         }
         return $ipid;
     }
-    public function ProvisionEgressFirewall($networkid) { 
+    public function ProvisionEgressFirewall($networkid,$proto) { 
         $client = parent::Client();
         try {
             $resp = $client->createEgressFirewallRule([
-                'protocol' => 'all',
+                'protocol' => $proto,
                 'cidrlist' => '0.0.0.0/0',
                 'networkid' => $networkid,
                 ]);
