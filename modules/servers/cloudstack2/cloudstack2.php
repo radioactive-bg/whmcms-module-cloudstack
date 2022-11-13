@@ -154,9 +154,9 @@ function cloudstack2_CreateAccount(array $params) {
        }
        $updated_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
        logModuleCall('ccl3',__FUNCTION__,$updated_stat->serverId,$updated_stat->serverId,$updated_stat->serverId); 
-       if(is_null($updated_stat->serverId)) {
+       if(is_null($updated_stat->serverId)){
         $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['configoption1'],$params['serviceid'],$params['configoptions']['Template'],$params['configoption4'],$updated_stat->networkId, $updated_stat->ipAddressId,$params['configoption2']);
-        logModuleCall('ccl3',__FUNCTION__,$newVM,$newVM,$newVM);    
+        logModuleCall('ccl4',__FUNCTION__,$newVM,$newVM,$newVM);    
        }
 
     } catch (Exception $e) {
