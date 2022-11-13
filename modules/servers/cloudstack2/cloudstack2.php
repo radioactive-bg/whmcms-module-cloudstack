@@ -72,7 +72,7 @@ function cloudstack2_ConfigOptions() {
                 $table->string('ipAddress');
                 $table->string('ipAddressId');
                 $table->string('portforwardId');
-                $table->string('egressFirewallId')
+                $table->string('egressFirewallId');
                 $table->string('firewallTCPId');
                 $table->string('firewallUDPId');
                 $table->string('firewallICMPId');
