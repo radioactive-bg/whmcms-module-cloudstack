@@ -157,6 +157,8 @@ function cloudstack2_CreateAccount(array $params) {
                 );
        }
        logModuleCall('provisioningmodule',__FUNCTION__,$firewallUDP,$firewallUDP,$firewallUDP);
+       logModuleCall('ccl2',__FUNCTION__,$server_stat,$server_stat,$server_stat);
+
        if(is_null($server_stat->serverId)) {
         //ProvisionNewVirtualMachine($serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid)
         
