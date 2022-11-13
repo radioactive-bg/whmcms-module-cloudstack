@@ -165,6 +165,8 @@ function cloudstack2_CreateAccount(array $params) {
                 'portforwardUDPId' => $portForwarding['createportforwardingruleresponse']['id'],
             ]
             );
+       } else {
+        logModuleCall('provisioningmodule',__FUNCTION__,$params,$updated_stat,$updated_stat->serverId);
        }
 
     } catch (Exception $e) {
