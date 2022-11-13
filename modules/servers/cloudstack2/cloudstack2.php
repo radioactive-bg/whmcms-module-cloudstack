@@ -124,16 +124,12 @@ function cloudstack2_CreateAccount(array $params) {
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
-        logModuleCall('cloudstack2',__FUNCTION__,$ipAddress,$ipAddress,$ipAddress);
         $egressFirewallTCP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'TCP');
-        logModuleCall('cloudstack2',__FUNCTION__,$egressFirewallTCP,$egressFirewallTCP,$egressFirewallTCP);
         $egressFirewallUDP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'UDP');
         $egressFirewallICMP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'ICMP');
-        logModuleCall('cloudstack2',__FUNCTION__,$egressFirewallTCP,$egressFirewallTCP,$egressFirewallTCP);
-        $firewallUDP = $cloudstackProvisioner->ProvisionUDPFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]);
-        logModuleCall('cloudstack2',__FUNCTION__,$firewallUDP,$firewallUDP,$firewallUDP);
-        $firewallTCP = $cloudstackProvisioner->ProvisionTCPFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]);
-        $firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]);
+        $firewallUDP = $cloudstackProvisioner->ProvisionUDPFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['id']);
+        $firewallTCP = $cloudstackProvisioner->ProvisionTCPFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['id']);
+        $firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['id']);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
                 ['serviceId' => $params['serviceid']],
                 [
@@ -141,9 +137,9 @@ function cloudstack2_CreateAccount(array $params) {
                     'networkId' => $resp['createnetworkresponse']['network']['id'],
                     'ipAddress' => $ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['ipaddress'],
                     'ipAddressId' => $associateIpAddress['associateipaddressresponse']['id'],
-                    'egressFirewallTCPId' => $egressFirewallTCP['createfirewallruleresponse']['id'],
-                    'egressFirewallUDPId' => $egressFirewallUDP['createfirewallruleresponse']['id'],
-                    'egressFirewallICMPId' => $egressFirewallICMP['createfirewallruleresponse']['id'],
+                    'egressFirewallTCPId' => $egressFirewallTCP['createegressfirewallruleresponse']['id'],
+                    'egressFirewallUDPId' => $egressFirewallUDP['createegressfirewallruleresponse']['id'],
+                    'egressFirewallICMPId' => $egressFirewallICMP['createegressfirewallruleresponse']['id'],
                     'firewallUDPId' => $firewallUDP['createfirewallruleresponse']['id'],
                     'firewallTCPId' => $firewallTCP['createfirewallruleresponse']['id'],
                     'firewallICMPId' => $firewallICMP['createfirewallruleresponse']['id'],
