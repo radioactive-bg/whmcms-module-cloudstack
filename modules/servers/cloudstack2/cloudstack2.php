@@ -152,7 +152,7 @@ function cloudstack2_CreateAccount(array $params) {
                 ]
                 );
        }
-       $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($server_stat->serviceId, $params['configoptions']['template'], $params['configoption3'], $associateIpAddress['associateipaddressresponse']['id'], $params['configoption4']);
+       $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['serviceId'], $params['configoptions']['template'], $params['configoption3'], $associateIpAddress['associateipaddressresponse']['id'], $params['configoption4']);
        logModuleCall('ccl3',__FUNCTION__,$newVM,$newVM,$newVM);    
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
