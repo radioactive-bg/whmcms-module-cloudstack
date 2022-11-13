@@ -145,18 +145,14 @@ function cloudstack2_CreateAccount(array $params) {
                     'firewallICMPId' => $firewallICMP['createfirewallruleresponse']['id'],
                 ]
                 );
-                Capsule::table('tblhosting')->updateOrInsert(
-                    ['id' => $params['serviceid']],
-                    [
-                        'username' => 'ubuntu',
-                        'dedicatedip' => $ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['ipaddress'],
-                    ]
+            Capsule::table('tblhosting')->updateOrInsert(
+                ['id' => $params['serviceid']],
+                [
+                    'username' => 'ubuntu',
+                    'dedicatedip' => $ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['ipaddress'],
+                ]
                 );
        }
-  
-     
-       if(is_null($server_stat['serverId'])){
-        logModuleCall('ccl3',__FUNCTION__,$server_stat,$server_stat,$server_stat);
         $resp = $cloudstackProvisioner->ProvisionNewVirtualMachine($server_stat->serviceId, $params['configoptions']['template'], $params['configoption3'], $associateIpAddress['associateipaddressresponse']['id'], $params['configoption4']);
         logModuleCall('provisioningmodule',__FUNCTION__,$resp,$resp,$resp);
         Capsule::table('mod_cloudstack2')->updateOrInsert(
@@ -166,7 +162,6 @@ function cloudstack2_CreateAccount(array $params) {
             ]
             );
        }
-         return 'success';
        
        
     
