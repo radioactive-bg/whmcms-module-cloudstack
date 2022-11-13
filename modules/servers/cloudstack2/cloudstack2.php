@@ -70,6 +70,12 @@ function cloudstack2_ConfigOptions() {
                 $table->string('networkId');
                 $table->string('accountId');
                 $table->string('ipAddress');
+                $table->string('ipAddressId');
+                $table->string('portforwardId');
+                $table->string('egressFirewallId')
+                $table->string('firewallTCPId');
+                $table->string('firewallUDPId');
+                $table->string('firewallICMPId');
             });
         }
         return array(
@@ -108,17 +114,26 @@ function cloudstack2_ConfigOptions() {
 function cloudstack2_CreateAccount(array $params) {
     try {
        $cloudstackProvisioner = new CloudstackProvisioner();
-       $server_network_id = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
-       if(is_null($server_network_id)){
+       $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
+       if(is_null($server_stat->netowrkId)){
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
+        $egressFirewall = $cloudstackProvisioner->ProvisionNewEgressFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]);
+        $firewallUDP = $cloudstackProvisioner->ProvisionUDPFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]);
+        $firewallTCP = $cloudstackProvisioner->ProvisionTCPFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]);
+        $firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
                 ['serviceId' => $params['serviceid']],
                 [
                     'accountId' => $params['accountid'],
                     'networkId' => $resp['createnetworkresponse']['network']['id'],
                     'ipAddress' => $ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['ipaddress'],
+                    'ipAddressId' => $associateIpAddress['associateipaddressresponse']['id'],
+                    'egressFirewallId' => $egressFirewall['createfirewallruleresponse']['id'],
+                    'firewallUDPId' => $firewallUDP['createfirewallruleresponse']['id'],
+                    'firewallTCPId' => $firewallTCP['createfirewallruleresponse']['id'],
+                    'firewallICMPId' => $firewallICMP['createfirewallruleresponse']['id'],
                 ]
                 );
                 
@@ -129,6 +144,16 @@ function cloudstack2_CreateAccount(array $params) {
                         'dedicatedip' => $ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['ipaddress'],
                     ]
                 );
+       }
+       if(is_null($server_stat->serverId)) {
+        //ProvisionNewVirtualMachine($serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid)
+        $resp = $cloudstackProvisioner->ProvisionNewVirtualMachine($server_stat->serviceId, $params['xxxx'], $params['configoption3'], $associateIpAddress['associateipaddressresponse']['id'], $params['configoption4']);
+        Capsule::table('mod_cloudstack2')->updateOrInsert(
+            ['serviceId' => $params['serviceid']],
+            [
+                'serverId' => $resp['deployvirtualmachineresponse']['id'],
+            ]
+            );
        }
        logModuleCall('provisioningmodule',__FUNCTION__,$server_network_id,$server_network_id,$server_network_id);
 

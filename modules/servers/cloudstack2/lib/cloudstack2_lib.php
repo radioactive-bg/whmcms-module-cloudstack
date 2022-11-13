@@ -66,24 +66,6 @@ class CloudstackProvisioner extends CloudstackClient {
         }
         return $resp;
     }
-    public function DeleteNetwork($networkid) {
-        $client = parent::Client();
-        try {
-            $resp = $client->deleteNetwork([
-                'id' => $networkid
-            ]);
-        } catch (Exception $e) {
-            logModuleCall(
-                'provisioningmodule',
-                __FUNCTION__,
-                $params,
-                $e->getMessage(),
-                $e->getTraceAsString()
-            );
-            return $e->getMessage();
-        }
-        return $resp;
-    }
     public function ProvisionNewIP($networkid) { 
         $client = parent::Client();
         try {
@@ -101,5 +83,303 @@ class CloudstackProvisioner extends CloudstackClient {
             return $e->getMessage();
         }
         return $ipid;
+    }
+    public function ProvisionEgressFirewall($networkid) { 
+        $client = parent::Client();
+        try {
+            $resp = $client->createEgressFirewallRule([
+                'protocol' => 'all',
+                'cidrlist' => '0.0.0.0/0',
+                'networkid' => $networkid,
+                ]);
+        } catch (Exception $e) {
+                    logModuleCall(
+                        'provisioningmodule',
+                        __FUNCTION__,
+                        $params,
+                        $e->getMessage(),
+                        $e->getTraceAsString()
+                    );
+                    return $e->getMessage();
+        }
+        return $resp;
+    }
+    public function ProvisionTCPFirewall($ipaddressid) {
+        $client = parent::Client();
+        try {
+            $resp = $client->createFirewallRule([
+                'protocol' => 'tcp',
+                'cidrlist' => '0.0.0.0/0',
+                'startport' => '1',
+                'endport' => '65535',
+                'ipaddressid' => $ipaddressid,
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function ProvisionUDPFirewall($ipaddressid) {
+        $client = parent::Client();
+        try {
+            $resp = $client->createFirewallRule([
+                'protocol' => 'udp',
+                'cidrlist' => '0.0.0.0/0',
+                'startport' => '1',
+                'endport' => '65535',
+                'ipaddressid' => $ipaddressid,
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function ProvisionICMPFirewall($ipaddressid) {
+        $client = parent::Client();
+        try {
+            $resp = $client->createFirewallRule([
+                'protocol' => 'icmp',
+                'cidrlist' => '0.0.0.0/0',
+                'ipaddressid' => $ipaddressid,
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function ProvisionNewVirtualMachine($serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid) {
+        $client = parent::Client();
+        try {
+            $resp = $client->deployVirtualMachine([
+                'displayname' => $serviceid . '_vm',
+                'name' => $serviceid . '_vm',
+                'templateid' => $templateid,
+                'zoneid' => $zoneid,
+                'networkids' => $networkid,
+                'serviceofferingid' => $serviceofferingid,
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function ProvisionPortForwardingRule($ipaddressid,$virtualmachineid) {
+        $client = parent::Client();
+        try {
+            $resp = $client->createPortForwardingRule([
+                'ipaddressid' => $ipaddressid,
+                'virtualmachineid' => $virtualmachineid,
+                'protocol' => 'tcp',
+                'publicport' => '1',
+                'publicendport' => '65535',
+                'privateport' => '1',
+                'privateendport' => '65535',
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function ProvisionNewSSHKeyPair($serviceid) {
+        $client = parent::Client();
+        try {
+            $resp = $client->registerSSHKeyPair([
+                'name' => $serviceid . '_keypair',
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function ProvisionNewVolume($serviceid,$zoneid,$diskofferingid) {
+        $client = parent::Client();
+        try {
+            $resp = $client->createVolume([
+                'displayname' => $serviceid . '_volume',
+                'name' => $serviceid . '_volume',
+                'zoneid' => $zoneid,
+                'diskofferingid' => $diskofferingid,
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function ProvisionNewVolumeAttachment($serviceid,$volumeid,$virtualmachineid) {
+        $client = parent::Client();
+        try {
+            $resp = $client->attachVolume([
+                'id' => $volumeid,
+                'virtualmachineid' => $virtualmachineid,
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function DeleteVirtualMachine($id) {
+        $client = parent::Client();
+        try {
+            $resp = $client->destroyVirtualMachine([
+                'id' => $id,
+                'expunge' => "true",
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function DeleteFirewallRule($id) {
+        $client = parent::Client();
+        try {
+            $resp = $client->deleteFirewallRule([
+                'id' => $id,
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function DeletePortForwardingRule($ruleid){
+        $client = parent::Client();
+        try {
+            $resp = $client->deletePortForwardingRule([
+                'id' => $ruleid,
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function DeleteVolumeAttachment($serviceid,$volumeid) {
+        $client = parent::Client();
+        try {
+            $resp = $client->detachVolume([
+                'id' => $volumeid,
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function DeleteSSHKeyPair($serviceid,$keypair) {
+        $client = parent::Client();
+        try {
+            $resp = $client->deleteSSHKeyPair([
+                'name' => $keypair,
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
+    public function DeleteNetwork($networkid) {
+        $client = parent::Client();
+        try {
+            $resp = $client->deleteNetwork([
+                'id' => $networkid
+            ]);
+        } catch (Exception $e) {
+            logModuleCall(
+                'provisioningmodule',
+                __FUNCTION__,
+                $params,
+                $e->getMessage(),
+                $e->getTraceAsString()
+            );
+            return $e->getMessage();
+        }
+        return $resp;
     }
 }
