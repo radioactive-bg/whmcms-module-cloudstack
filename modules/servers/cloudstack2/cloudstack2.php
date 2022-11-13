@@ -152,10 +152,16 @@ function cloudstack2_CreateAccount(array $params) {
                 ]
                 );
        }
+       $updated_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
        logModuleCall('ccl3',__FUNCTION__,$params['serviceid'],$params['serviceid'],$params['configoptions']);    
        logModuleCall('ccl3',__FUNCTION__,$newVM,$params['serviceId'],$params['configoptions']['Template']);    
-
-       $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['serviceId'], $params['configoptions']['template'], $params['configoption3'], $associateIpAddress['associateipaddressresponse']['id'], $params['configoption4']);
+       //ProvisionNewVirtualMachine($serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid) 
+       $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['serviceid'],
+        $params['configoptions']['Template'], 
+        $params['configoption3'], 
+        $updated_stat->networkId,
+        $updated_stat->ipAddressId,
+        $params['configoption1']);
        logModuleCall('ccl3',__FUNCTION__,$newVM,$newVM,$newVM);    
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
