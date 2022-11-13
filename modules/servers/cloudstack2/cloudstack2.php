@@ -120,7 +120,6 @@ function cloudstack2_CreateAccount(array $params) {
        $cloudstackProvisioner = new CloudstackProvisioner();
        logModuleCall('cloudstack2',__FUNCTION__,$params,$params,$params);
        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
-       logModuleCall('ccl2',__FUNCTION__,$server_stat,$server_stat,$server_stat);
        if(is_null($server_stat->networkId)){
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
@@ -129,12 +128,8 @@ function cloudstack2_CreateAccount(array $params) {
         $egressFirewallUDP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'UDP');
         $egressFirewallICMP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'ICMP');
         $firewallUDP = $cloudstackProvisioner->ProvisionUDPFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['id']);
-        logModuleCall('provisioningmodule',__FUNCTION__,$firewallUDP,$firewallUDP,$firewallUDP);
         $firewallTCP = $cloudstackProvisioner->ProvisionTCPFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['id']);
-        logModuleCall('provisioningmodule',__FUNCTION__,$firewallTCP,$firewallTCP,$firewallTCP);
         $firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['id']);
-        logModuleCall('provisioningmodule',__FUNCTION__,$firewallICMP,$firewallICMP,$firewallICMP);
-        logModuleCall('ccl1',__FUNCTION__,$server_stat,$server_stat,$server_stat);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
                 ['serviceId' => $params['serviceid']],
                 [
@@ -162,7 +157,7 @@ function cloudstack2_CreateAccount(array $params) {
 
        if(is_null($server_stat->serverId)) {
         //ProvisionNewVirtualMachine($serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid)
-        
+        logModuleCall('ccl3',__FUNCTION__,$server_stat,$server_stat,$server_stat);
         $resp = $cloudstackProvisioner->ProvisionNewVirtualMachine($server_stat->serviceId, $params['configoptions']['template'], $params['configoption3'], $associateIpAddress['associateipaddressresponse']['id'], $params['configoption4']);
         logModuleCall('provisioningmodule',__FUNCTION__,$resp,$resp,$resp);
         Capsule::table('mod_cloudstack2')->updateOrInsert(
