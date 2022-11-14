@@ -177,6 +177,7 @@ function WaitForPassword($jobId) {
         try {
             $password = $cloudstackProvisioner->QueryAsyncJobResult($jobId);
             if($password['result'] == ""){
+                logModuleCall('provisioningmodule',__FUNCTION__,$params,$password,$password);
                 continue;
             }
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password,$password);
