@@ -191,7 +191,7 @@ function WaitForPassword($jobId) {
                             'password' => $password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
                         ]
                         );
-            }
+            
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password,$password);
         } catch (Exception $e) {
             $curAttempts++;
