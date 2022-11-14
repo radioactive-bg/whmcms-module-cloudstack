@@ -179,9 +179,10 @@ function WaitForPassword($jobId) {
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse'],$password);
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse']['jobresult']['virtualmachine'],$password);
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],$password);
-            if($password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'] == ""){
-                logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],$password);
+            if($password['queryasyncjobresultresponse']['jobresult'] == ""){
+                logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse'],$password);
                 sleep(60);
+                logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse'],$password);
                 continue;
             } else {
                 Capsule::table('mod_cloudstack2')->updateOrInsert(
