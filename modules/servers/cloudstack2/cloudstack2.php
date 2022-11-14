@@ -170,7 +170,7 @@ function ProvisionIngressFirewall($serviceid,$ipaddressid) {
 }
 function WaitForPassword($jobId) { 
     $cloudstackInfo = new CloudstackInfo();
-    $numAttempts = 10;
+    $numAttempts = 30;
     $curAttempts = 0;
     do {
         try {
@@ -178,7 +178,8 @@ function WaitForPassword($jobId) {
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password,$password);
         } catch (Exception $e) {
             $curAttempts++;
-            sleep(30);
+            logModuleCall('provisioningmodule',__FUNCTION__,$params,$jobId,$curAttempts);
+            sleep(10);
             continue;
         }
         break;
@@ -241,7 +242,7 @@ function cloudstack2_CreateAccount(array $params) {
         $portForwardingTCP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId, $newVM['deployvirtualmachineresponse']['id'], 'TCP');
         $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId, $newVM['deployvirtualmachineresponse']['id'], 'UDP');
         logModuleCall('provisioningmodule',__FUNCTION__,$params,$newVM,$newVM);
-        WaitForPassword($newVM['deployvirtualmachineresponse']['jobid']);
+        
         Capsule::table('mod_cloudstack2')->updateOrInsert(
             ['serviceId' => $params['serviceid']],
             [
@@ -252,6 +253,7 @@ function cloudstack2_CreateAccount(array $params) {
                 'portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],
             ]
             );
+            WaitForPassword($newVM['deployvirtualmachineresponse']['jobid']);
        } else {
         logModuleCall('provisioningmodule',__FUNCTION__,$params,$updated_stat,$updated_stat->serverId);
        }
