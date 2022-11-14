@@ -175,41 +175,17 @@ function cloudstack2_CreateAccount(array $params) {
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         logModuleCall('provisioningmodule',__FUNCTION__,$resp,$associateIpAddress,$ipAddress);
-        do {
-            try{
-                $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
-                logModuleCall('provisioningmodule',__FUNCTION__,$resp,$ipAddress,$ipAddress);
-            } catch (Exception $e) {
-                sleep(20);
-                continue;
-            }
-            break;
-        } while(is_null($ipAddress['listpublicipaddressesresponse']['publicipaddress']['ipaddress']));
-        logModuleCall('provisioningmodule',__FUNCTION__,$resp,$associateIpAddress,$ipAddress);
-        do {
-            try {
-                $egressFirewallTCP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'TCP');
-                $egressFirewallUDP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'UDP');
-                $egressFirewallICMP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'ICMP');
-            } catch (Exception $e) {
-                sleep(10);
-                continue;
-            }
-            break;
-        } while(is_null($egressFirewallTCP['createfirewallruleresponse']['id']) || is_null($egressFirewallUDP['createfirewallruleresponse']['id']) || is_null($egressFirewallICMP['createfirewallruleresponse']['id']));
-        do {
-            try {
-                $firewallUDP = $cloudstackProvisioner->ProvisionUDPFirewall($ipaddressid);
-                $firewallTCP = $cloudstackProvisioner->ProvisionTCPFirewall($ipaddressid);
-                $firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($ipaddressid);
-            } catch (Exception $e) {
-                $curAttempts++;
-                sleep(10);
-                continue;
-            }
-            break;
-        } while(is_null($firewallUDP['createfirewallruleresponse']['id']) || is_null($firewallTCP['createfirewallruleresponse']['id']) || is_null($firewallICMP['createfirewallruleresponse']['id']));
-
+        $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
+        if(is_null($ipAddress)){
+            sleep(10);
+            $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
+        }
+        $egressFirewallTCP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'TCP');
+        $egressFirewallUDP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'UDP');
+        $egressFirewallICMP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'ICMP');
+        $firewallUDP = $cloudstackProvisioner->ProvisionUDPFirewall($associateIpAddress['associateipaddressresponse']['id']);
+        $firewallTCP = $cloudstackProvisioner->ProvisionTCPFirewall($associateIpAddress['associateipaddressresponse']['id'];
+        $firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($associateIpAddress['associateipaddressresponse']['id']);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
                 ['serviceId' => $params['serviceid']],
                 [
