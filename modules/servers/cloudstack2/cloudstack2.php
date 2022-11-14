@@ -168,17 +168,33 @@ function ProvisionIngressFirewall($serviceid,$ipaddressid) {
         );
     return true;
 }
+function WaitForPassword($jobId) { 
+    $cloudstackInfo = new CloudstackInfo();
+    $numAttempts = 10;
+    $curAttempts = 0;
+    do {
+        try {
+            $password = $cloudstackProvisioner->QueryAsyncJobResult($jobId);
+            logModuleCall('provisioningmodule',__FUNCTION__,$params,$password,$password);
+        } catch (Exception $e) {
+            $curAttempts++;
+            sleep(30);
+            continue;
+        }
+        break;
+    } while($curAttempts < $numAttempts);
+    
+}
 function cloudstack2_CreateAccount(array $params) {
     try {
-    
        $cloudstackProvisioner = new CloudstackProvisioner();
        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
        if(is_null($server_stat->networkId)){
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
-        $peg = ProvisionEgressFirewall($params['serviceid'],$resp['createnetworkresponse']['network']['id']);
-        $pig = ProvisionIngressFirewall($params['serviceid'],$associateIpAddress['associateipaddressresponse']['id']);
+        ProvisionEgressFirewall($params['serviceid'],$resp['createnetworkresponse']['network']['id']);
+        ProvisionIngressFirewall($params['serviceid'],$associateIpAddress['associateipaddressresponse']['id']);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
                 ['serviceId' => $params['serviceid']],
                 [
@@ -207,8 +223,9 @@ function cloudstack2_CreateAccount(array $params) {
                     ]
                 );
             } catch (Exception $e) {
+                $cloudstackInfo = new CloudstackInfo();
                 $fingerprint = violuke\RsaSshKeyFingerprint\FingerprintGenerator::getFingerprint($params['customfields']['sshKey']);
-                $keyId = $cloudstackProvisioner->ListSSHKeyPairs($fingerprint);
+                $keyId = $cloudstackInfo->ListSSHKeyPairs($fingerprint);
                 Capsule::table('mod_cloudstack2')->updateOrInsert(
                     ['serviceId' => $params['serviceid']],
                     [

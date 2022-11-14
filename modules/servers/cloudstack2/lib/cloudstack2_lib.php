@@ -42,6 +42,10 @@ class CloudstackInfo extends CloudstackClient {
         return $client->listSSHKeyPairs[(['fingerprint' => $fingerprint])];
 
     }
+    public function QueryAsyncJobResult($jobId){
+        $client = parent::Client();
+        return $client->queryAsyncJobResult(['jobid' => $jobId]);
+    }
 }
 class CloudstackProvisioner extends CloudstackClient {
     public function ListPublicIpAddressesById($id) {
