@@ -180,6 +180,7 @@ function cloudstack2_CreateAccount(array $params) {
                 $job_status = $cloudstackProvisioner->QueryAsyncJob($associateIpAddress['associateipaddressresponse']['jobid']);
                 if(isset($job_status['queryasyncjobresultresponse']['jobresult']['ipaddress'])) {
                     $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
+                    break;
                 }
                 sleep(10);
                 $retry_c++;
@@ -199,6 +200,8 @@ function cloudstack2_CreateAccount(array $params) {
                     'ipAddress' => $ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['ipaddress'],
                     'ipAddressId' => $associateIpAddress['associateipaddressresponse']['id'],
                     'egressFirewallTCPId' => $egressFirewallTCP['createegressfirewallruleresponse']['id'],
+                    'egressFirewallUDPId' => $firewallUDP['createegressfirewallruleresponse']['id'],
+                    'egressFirewallICMPId' => $firewallICMP['createegressfirewallruleresponse']['id'],
                     'firewallUDPId' => $firewallUDP['createfirewallruleresponse']['id'],
                     'firewallTCPId' => $firewallTCP['createfirewallruleresponse']['id'],
                     'firewallICMPId' => $firewallICMP['createfirewallruleresponse']['id'],
@@ -315,9 +318,15 @@ function cloudstack2_TerminateAccount(array $params){
         $cloudstackProvisioner = new CloudstackProvisioner();
         $server_status = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
         $destroyVmResponse = $cloudstackProvisioner->DeleteVirtualMachine($server_status->serverId);
+        if(isset($destroyVmResponse['destroyvirtualmachine']['jobid'])){
+            do {
+               $job = $cloudstackProvisioner->QueryAsyncJob($destroyVmResponse['destroyvirtualmachine']['jobid']);
+               logModuleCall('provisioningmodule',__FUNCTION__,$params,$job,$job);
+            }
+        }
         $destroyKeyResponse = $cloudstackProvisioner->DeleteSSHKeyPair($server_status->sshKeyId);
         $resp = $cloudstackProvisioner->DeleteNetwork($server_status->networkId);
-        if($resp['deletenetworkresponse']['jobid']) {
+        if(isset($resp['deletenetworkresponse']['jobid'])) {
             Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->delete();
             Capsule::table('tblhosting')->updateOrInsert(
                 ['id' => $params['serviceid']],
