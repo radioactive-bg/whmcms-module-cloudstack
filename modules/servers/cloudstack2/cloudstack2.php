@@ -183,6 +183,7 @@ function cloudstack2_CreateAccount(array $params) {
                 sleep(20);
                 continue;
             }
+            break;
         } while(is_null($ipAddress['listpublicipaddressesresponse']['publicipaddress']['ipaddress']));
         logModuleCall('provisioningmodule',__FUNCTION__,$resp,$associateIpAddress,$ipAddress);
         do {
