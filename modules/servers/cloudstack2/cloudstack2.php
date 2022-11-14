@@ -116,7 +116,6 @@ function cloudstack2_ConfigOptions() {
     }
 
 }
-
 function ProvisionIngressFirewall($serviceid,$ipaddressid) { 
     $cloudstackProvisioner = new CloudstackProvisioner();
     $numAttempts = 10;
@@ -166,6 +165,7 @@ function WaitForPassword($jobId) {
     } while($curAttempts < $numAttempts);
     
 }
+
 function cloudstack2_CreateAccount(array $params) {
     try {
        $cloudstackProvisioner = new CloudstackProvisioner();
@@ -175,11 +175,10 @@ function cloudstack2_CreateAccount(array $params) {
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         logModuleCall('provisioningmodule',__FUNCTION__,$resp,$associateIpAddress,$ipAddress);
-        $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
-        if(is_null($ipAddress)){
+        if($associateIpAddress['associateipaddressresponse']['jobid'] != "" ) {
             sleep(10);
-            $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
         }
+        $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
         $egressFirewallTCP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'TCP');
         $egressFirewallUDP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'UDP');
         $egressFirewallICMP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'ICMP');
