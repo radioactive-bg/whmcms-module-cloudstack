@@ -174,19 +174,21 @@ function cloudstack2_CreateAccount(array $params) {
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         if(isset($associateIpAddress['associateipaddressresponse']['jobid'])) {
-            
-            
             $retry = 2;
             $retry_c = 0;
             do {
                 $job_status = $cloudstackProvisioner->QueryAsyncJob($associateIpAddress['associateipaddressresponse']['jobid']);
-                logModuleCall('provisioningmodule',__FUNCTION__,$params,$job_status,$job_status);
+                if(isset($job_status['queryasyncjobresultresponse']['jobresult']['ipaddress'])) {
+                    $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
+                }
+                    $retry_c++;
+                    sleep(10);
+                    continue;
+                }
                 sleep(10);
                 $retry_c++;
             } while ($retry_c < $retry);
         }
-        logModuleCall('provisioningmodule',__FUNCTION__,$resp,$associateIpAddress,$ipAddress);
-        $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
         $egressFirewallTCP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'TCP');
         $egressFirewallUDP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'UDP');
         $egressFirewallICMP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'ICMP');
@@ -200,6 +202,7 @@ function cloudstack2_CreateAccount(array $params) {
                     'networkId' => $resp['createnetworkresponse']['network']['id'],
                     'ipAddress' => $ipAddress['listpublicipaddressesresponse']['publicipaddress'][0]['ipaddress'],
                     'ipAddressId' => $associateIpAddress['associateipaddressresponse']['id'],
+                    'egressFirewallTCPId' => $egressFirewallTCP['createegressfirewallruleresponse']['id'],
                     'firewallUDPId' => $firewallUDP['createfirewallruleresponse']['id'],
                     'firewallTCPId' => $firewallTCP['createfirewallruleresponse']['id'],
                     'firewallICMPId' => $firewallICMP['createfirewallruleresponse']['id'],
