@@ -319,11 +319,11 @@ function cloudstack2_TerminateAccount(array $params){
         $server_status = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
         $destroyVmResponse = $cloudstackProvisioner->DeleteVirtualMachine($server_status->serverId);
         logModuleCall('provisioningmodule',__FUNCTION__,$params,$destroyVmResponse,$destroyVmResponse);
-        if(isset($destroyVmResponse['destroyvirtualmachine']['jobid'])){
+        if(isset($destroyVmResponse['destroyvirtualmachineresponse']['jobid'])){
             $retry = 10;
             $retry_c = 0;
             do {
-               $job = $cloudstackProvisioner->QueryAsyncJob($destroyVmResponse['destroyvirtualmachine']['jobid']);
+               $job = $cloudstackProvisioner->QueryAsyncJob($destroyVmResponse['destroyvirtualmachineresponse']['jobid']);
                logModuleCall('provisioningmodule',__FUNCTION__,$params,$job,$job);
                sleep(10);
                $retry_c++;
