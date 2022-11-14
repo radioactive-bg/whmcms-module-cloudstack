@@ -169,15 +169,16 @@ function WaitForPassword($jobId) {
 function cloudstack2_CreateAccount(array $params) {
     try {
        $cloudstackProvisioner = new CloudstackProvisioner();
-       $cloudstackInfo = new CloudstackInfo();
        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
        if(is_null($server_stat->networkId)){
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
-        logModuleCall('provisioningmodule',__FUNCTION__,$resp,$associateIpAddress,$ipAddress);
-        if($associateIpAddress['associateipaddressresponse']['jobid'] != "" ) {
-            sleep(10);
+        if(isset($associateIpAddress['associateipaddressresponse']['jobid'])) {
+            $job_status = $cloudstackProvisioner->QueryAsyncJob($associateIpAddress['associateipaddressresponse']['jobid']);
+            logModuleCall('provisioningmodule',__FUNCTION__,$params,$job_status,$job_status);
+
         }
+        logModuleCall('provisioningmodule',__FUNCTION__,$resp,$associateIpAddress,$ipAddress);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
         $egressFirewallTCP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'TCP');
         $egressFirewallUDP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'UDP');
