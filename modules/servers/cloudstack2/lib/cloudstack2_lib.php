@@ -48,7 +48,6 @@ class CloudstackProvisioner extends CloudstackClient {
     public function ListPublicIpAddressesById($id) {
         $client = parent::Client();
         return $client->listPublicIpAddresses(['id' => $id]);
-
     }
     public function QueryAsyncJob($jobId){
         $client = parent::Client();
@@ -380,7 +379,8 @@ class CloudstackProvisioner extends CloudstackClient {
         $client = parent::Client();
         try {
             $resp = $client->deleteNetwork([
-                'id' => $networkid
+                'id' => $networkid,
+                'forced' => "true",
             ]);
         } catch (Exception $e) {
             logModuleCall(

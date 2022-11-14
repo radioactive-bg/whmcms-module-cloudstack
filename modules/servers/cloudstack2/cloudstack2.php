@@ -170,7 +170,7 @@ function ProvisionIngressFirewall($serviceid,$ipaddressid) {
 }
 function WaitForPassword($jobId) { 
     $cloudstackProvisioner = new CloudstackProvisioner();
-    $numAttempts = 5;
+    $numAttempts = 20;
     $curAttempts = 0;
     logModuleCall('provisioningmodule',__FUNCTION__,$params,$jobId,$curAttempts);
     do {
@@ -179,19 +179,13 @@ function WaitForPassword($jobId) {
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse'],$password);
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse']['jobresult']['virtualmachine'],$password);
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],$password);
-            if($password['queryasyncjobresultresponse']['jobresult'] == ""){
-                logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse'],$password);
-                sleep(60);
-                logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse'],$password);
-                continue;
-            } else {
-                Capsule::table('mod_cloudstack2')->updateOrInsert(
+            Capsule::table('mod_cloudstack2')->updateOrInsert(
                     ['serviceId' => $params['serviceid']],
                     [
                         'vmInitialPassword' => $password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
                     ]
                     );
-                    Capsule::table('tblhosting')->updateOrInsert(
+            Capsule::table('tblhosting')->updateOrInsert(
                         ['id' => $params['serviceid']],
                         [
                             'password' => $password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
