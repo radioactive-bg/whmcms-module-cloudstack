@@ -174,9 +174,16 @@ function cloudstack2_CreateAccount(array $params) {
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         if(isset($associateIpAddress['associateipaddressresponse']['jobid'])) {
-            $job_status = $cloudstackProvisioner->QueryAsyncJob($associateIpAddress['associateipaddressresponse']['jobid']);
-            logModuleCall('provisioningmodule',__FUNCTION__,$params,$job_status,$job_status);
-
+            
+            
+            $retry = 2;
+            $retry_c = 0;
+            do {
+                $job_status = $cloudstackProvisioner->QueryAsyncJob($associateIpAddress['associateipaddressresponse']['jobid']);
+                logModuleCall('provisioningmodule',__FUNCTION__,$params,$job_status,$job_status);
+                sleep(10);
+                $retry_c++;
+            } while ($retry_c < $retry);
         }
         logModuleCall('provisioningmodule',__FUNCTION__,$resp,$associateIpAddress,$ipAddress);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
