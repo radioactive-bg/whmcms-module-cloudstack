@@ -181,10 +181,6 @@ function cloudstack2_CreateAccount(array $params) {
                 if(isset($job_status['queryasyncjobresultresponse']['jobresult']['ipaddress'])) {
                     $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
                 }
-                    $retry_c++;
-                    sleep(10);
-                    continue;
-                }
                 sleep(10);
                 $retry_c++;
             } while ($retry_c < $retry);
