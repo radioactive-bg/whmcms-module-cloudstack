@@ -170,21 +170,36 @@ function ProvisionIngressFirewall($serviceid,$ipaddressid) {
 }
 function WaitForPassword($jobId) { 
     $cloudstackProvisioner = new CloudstackProvisioner();
-    $numAttempts = 30;
+    $numAttempts = 5;
     $curAttempts = 0;
     logModuleCall('provisioningmodule',__FUNCTION__,$params,$jobId,$curAttempts);
     do {
         try {
             $password = $cloudstackProvisioner->QueryAsyncJob($jobId);
-            if($password['result'] == ""){
-                logModuleCall('provisioningmodule',__FUNCTION__,$params,$password,$password);
+            if($password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'] == ""){
+                logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],$password);
+                sleep(60);
                 continue;
+            } else {
+                Capsule::table('mod_cloudstack2')->updateOrInsert(
+                    ['serviceId' => $params['serviceid']],
+                    [
+                        'vmInitialPassword' => $password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
+                    ]
+                    );
+                    Capsule::table('tblhosting')->updateOrInsert(
+                        ['id' => $params['serviceid']],
+                        [
+                            'username' => 'ubuntu',
+                            'password' => $password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
+                        ]
+                        );
             }
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password,$password);
         } catch (Exception $e) {
             $curAttempts++;
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$e,$curAttempts);
-            sleep(10);
+            sleep(20);
             continue;
         }
         break;
