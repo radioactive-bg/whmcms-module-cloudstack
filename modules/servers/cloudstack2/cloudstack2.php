@@ -176,7 +176,7 @@ function WaitForPassword($jobId) {
     do {
         try {
             $password = $cloudstackProvisioner->QueryAsyncJob($jobId);
-            logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse']['jobresult'],$password);
+            logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse'],$password);
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse']['jobresult']['virtualmachine'],$password);
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],$password);
             if($password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'] == ""){
@@ -193,7 +193,6 @@ function WaitForPassword($jobId) {
                     Capsule::table('tblhosting')->updateOrInsert(
                         ['id' => $params['serviceid']],
                         [
-                            'username' => 'ubuntu',
                             'password' => $password['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
                         ]
                         );
@@ -201,7 +200,6 @@ function WaitForPassword($jobId) {
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password,$password);
         } catch (Exception $e) {
             $curAttempts++;
-            logModuleCall('provisioningmodule',__FUNCTION__,$params,$e,$curAttempts);
             sleep(20);
             continue;
         }
@@ -218,6 +216,7 @@ function cloudstack2_CreateAccount(array $params) {
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
+        logModuleCall('provisioningmodule',__FUNCTION__,$params,$ipAddress,$ipAddress);
         ProvisionEgressFirewall($params['serviceid'],$resp['createnetworkresponse']['network']['id']);
         ProvisionIngressFirewall($params['serviceid'],$associateIpAddress['associateipaddressresponse']['id']);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
