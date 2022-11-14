@@ -182,10 +182,12 @@ function cloudstack2_CreateAccount(array $params) {
         $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['configoption1'],$params['serviceid'],$params['configoptions']['Template'],$params['configoption4'],$updated_stat->networkId, $updated_stat->ipAddressId,$params['configoption2'],$updated_stat->sshKeyId);
         $portForwardingTCP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId, $newVM['deployvirtualmachineresponse']['id'], 'TCP');
         $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId, $newVM['deployvirtualmachineresponse']['id'], 'UDP');
+        logModuleCall('provisioningmodule',__FUNCTION__,$params,$newVM,$newVM);
         Capsule::table('mod_cloudstack2')->updateOrInsert(
             ['serviceId' => $params['serviceid']],
             [
                 'serverId' => $newVM['deployvirtualmachineresponse']['id'],
+                'templateId' => $params['configoptions']['Template'],
                 'vmInitialPassword' => $newVM['deployvirtualmachineresponse']['password'],
                 'portforwardTCPId' => $portForwardingTCP['createportforwardingruleresponse']['id'],
                 'portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],
@@ -253,6 +255,7 @@ function cloudstack2_TerminateAccount(array $params){
         $cloudstackProvisioner = new CloudstackProvisioner();
         $server_status = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
         $destroyVmResponse = $cloudstackProvisioner->DeleteVirtualMachine($server_status->serverId);
+        $destroyKeyResponse = $cloudstackProvisioner->DeleteSSHKeyPair($server_status->sshKeyId);
         $resp = $cloudstackProvisioner->DeleteNetwork($server_status->networkId);
         if($resp['deletenetworkresponse']['jobid']) {
             Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->delete();

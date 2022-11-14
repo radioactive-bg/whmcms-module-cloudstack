@@ -353,7 +353,7 @@ class CloudstackProvisioner extends CloudstackClient {
             }
             return $resp;
     }
-    public function DeleteSSHKeyPair($serviceid,$keypair) {
+    public function DeleteSSHKeyPair($keypair) {
         $client = parent::Client();
         try {
             $resp = $client->deleteSSHKeyPair([
