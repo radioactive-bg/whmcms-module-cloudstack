@@ -73,13 +73,14 @@ function cloudstack2_ConfigOptions() {
                 $table->string('ipAddressId');
                 $table->string('portforwardUDPId');
                 $table->string('portforwardTCPId');
-                $table->string('portforwardICMPId');
                 $table->string('egressFirewallTCPId');
                 $table->string('egressFirewallUDPId');
                 $table->string('egressFirewallICMPId');
                 $table->string('firewallTCPId');
                 $table->string('firewallUDPId');
                 $table->string('firewallICMPId');
+                $table->string('templateId');
+                $table->string('sshKeyId');
             });
         }
         return array(
@@ -183,7 +184,6 @@ function cloudstack2_CreateAccount(array $params) {
     }
     return 'success';
 }
-
 function cloudstack2_SuspendAccount(array $params) {
     try {
         // Call the service's suspend function, using the values provided by
@@ -222,9 +222,7 @@ function cloudstack2_UnsuspendAccount(array $params) {
 
     return 'success';
 }
-
-function cloudstack2_TerminateAccount(array $params)
-{
+function cloudstack2_TerminateAccount(array $params){
     try {
 
         $cloudstackProvisioner = new CloudstackProvisioner();
@@ -249,7 +247,6 @@ function cloudstack2_TerminateAccount(array $params)
 
     return 'success';
 }
-
 function cloudstack2_ChangePassword(array $params){
     try {
         // Call the service's change password function, using the values
