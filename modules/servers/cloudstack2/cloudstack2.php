@@ -184,7 +184,7 @@ function cloudstack2_CreateAccount(array $params) {
         $egressFirewallUDP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'UDP');
         $egressFirewallICMP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'ICMP');
         $firewallUDP = $cloudstackProvisioner->ProvisionUDPFirewall($associateIpAddress['associateipaddressresponse']['id']);
-        $firewallTCP = $cloudstackProvisioner->ProvisionTCPFirewall($associateIpAddress['associateipaddressresponse']['id'];
+        $firewallTCP = $cloudstackProvisioner->ProvisionTCPFirewall($associateIpAddress['associateipaddressresponse']['id']);
         $firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($associateIpAddress['associateipaddressresponse']['id']);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
                 ['serviceId' => $params['serviceid']],
