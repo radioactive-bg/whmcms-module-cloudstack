@@ -172,13 +172,14 @@ function WaitForPassword($jobId) {
     $cloudstackInfo = new CloudstackInfo();
     $numAttempts = 30;
     $curAttempts = 0;
+    logModuleCall('provisioningmodule',__FUNCTION__,$params,$jobId,$curAttempts);
     do {
         try {
             $password = $cloudstackProvisioner->QueryAsyncJobResult($jobId);
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password,$password);
         } catch (Exception $e) {
             $curAttempts++;
-            logModuleCall('provisioningmodule',__FUNCTION__,$params,$jobId,$curAttempts);
+            logModuleCall('provisioningmodule',__FUNCTION__,$params,$e,$curAttempts);
             sleep(10);
             continue;
         }
