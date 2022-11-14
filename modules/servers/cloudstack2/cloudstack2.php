@@ -118,6 +118,7 @@ function cloudstack2_ConfigOptions() {
 
 function cloudstack2_CreateAccount(array $params) {
     try {
+        logModuleCall('provisioningmodule',__FUNCTION__,$params,$params,$params);
        $cloudstackProvisioner = new CloudstackProvisioner();
        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
        if(is_null($server_stat->networkId)){
