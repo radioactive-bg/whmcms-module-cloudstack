@@ -259,6 +259,7 @@ function cloudstack2_CreateAccount(array $params) {
                 $retry_c = 0;
                 do {
                     $deploy_job_status = $cloudstackProvisioner->QueryAsyncJob($newVM['deployvirtualmachineresponse']['jobid']);
+                    logModuleCall('provisioningmodule',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status);
                     if(isset($deploy_job_status['queryasyncjobresultresponse']['jobresult'])) {
                         logModuleCall('provisioningmodule',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status);
                         break;
