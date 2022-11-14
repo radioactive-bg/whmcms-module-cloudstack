@@ -37,7 +37,11 @@ class CloudstackInfo extends CloudstackClient {
         $client = parent::Client();
         return $client->listNetworks();
     }
-    
+    public function FindKeyByFingerprint($fingerprint) {
+        $client = parent::Client();
+        return $client->listSSHKeyPairs[(['fingerprint' => $fingerprint])];
+
+    }
 }
 class CloudstackProvisioner extends CloudstackClient {
     public function ListPublicIpAddressesById($id) {
@@ -168,7 +172,7 @@ class CloudstackProvisioner extends CloudstackClient {
             }
             return $resp;
     }
-    public function ProvisionNewVirtualMachine($prefix, $serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid) {
+    public function ProvisionNewVirtualMachine($prefix, $serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid,$sshkeyid) {
         $client = parent::Client();
         try {
             $resp = $client->deployVirtualMachine([
@@ -178,6 +182,7 @@ class CloudstackProvisioner extends CloudstackClient {
                 'zoneid' => $zoneid,
                 'networkids' => $networkid,
                 'serviceofferingid' => $serviceofferingid,
+                'keypair' => $keypair,
                 ]);
             } catch (Exception $e) {
                 logModuleCall(
@@ -215,11 +220,13 @@ class CloudstackProvisioner extends CloudstackClient {
             }
             return $resp;
     }
-    public function ProvisionNewSSHKeyPair($serviceid) {
+    public function ProvisionNewSSHKeyPair($serviceid,$prefix,$accId,$sshpublickey) {
         $client = parent::Client();
         try {
             $resp = $client->registerSSHKeyPair([
-                'name' => $serviceid . '_keypair',
+                'name' => $prefix . '-' . $accId . '-' . $serviceid . '-keypair',
+                'publickey' => $sshpublickey,
+
                 ]);
             } catch (Exception $e) {
                 logModuleCall(

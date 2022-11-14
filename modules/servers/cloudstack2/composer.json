@@ -1,6 +1,7 @@
 {
     "require": {
-        "pcextreme/cloudstack": "^0.3.0"
+        "pcextreme/cloudstack": "^0.3.0",
+        "violuke/rsa-ssh-key-fingerprint": "^1.1"
     },
     "autoload": {
         "files": ["lib/cloudstack2_lib.php"]

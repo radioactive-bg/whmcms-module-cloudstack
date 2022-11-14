@@ -6,4 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'violuke\\RsaSshKeyFingerprint' => array($vendorDir . '/violuke/rsa-ssh-key-fingerprint/src'),
 );

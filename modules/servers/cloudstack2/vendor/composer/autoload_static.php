@@ -106,6 +106,16 @@ class ComposerStaticInitfc2de6ccfd90c9aca13585bca7229ac9
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'v' => 
+        array (
+            'violuke\\RsaSshKeyFingerprint' => 
+            array (
+                0 => __DIR__ . '/..' . '/violuke/rsa-ssh-key-fingerprint/src',
+            ),
+        ),
+    );
+
     public static $classMap = array (
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
@@ -121,6 +131,7 @@ class ComposerStaticInitfc2de6ccfd90c9aca13585bca7229ac9
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitfc2de6ccfd90c9aca13585bca7229ac9::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitfc2de6ccfd90c9aca13585bca7229ac9::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitfc2de6ccfd90c9aca13585bca7229ac9::$prefixesPsr0;
             $loader->classMap = ComposerStaticInitfc2de6ccfd90c9aca13585bca7229ac9::$classMap;
 
         }, null, ClassLoader::class);

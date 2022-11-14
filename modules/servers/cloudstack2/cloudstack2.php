@@ -81,6 +81,7 @@ function cloudstack2_ConfigOptions() {
                 $table->string('firewallICMPId');
                 $table->string('templateId');
                 $table->string('sshKeyId');
+                $table->string('vmInitialPassword');
             });
         }
         return array(
@@ -118,7 +119,7 @@ function cloudstack2_ConfigOptions() {
 
 function cloudstack2_CreateAccount(array $params) {
     try {
-        logModuleCall('provisioningmodule',__FUNCTION__,$params,$params,$params);
+    
        $cloudstackProvisioner = new CloudstackProvisioner();
        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
        if(is_null($server_stat->networkId)){
@@ -154,17 +155,40 @@ function cloudstack2_CreateAccount(array $params) {
                 ]
                 );
        }
+       if($params['customfields']['sshKey'] != "" ){
+            try {
+                $sshKey = $cloudstackProvisioner->ProvisionNewSSHKeyPair($params['serviceid'],$params['configoption1'],$params['accountid'],$params['customfields']['sshKey']);
+                logModuleCall('provisioningmodule',__FUNCTION__,$sshKey,$sshKey,$sshKey);
+                Capsule::table('mod_cloudstack2')->updateOrInsert(
+                    ['serviceId' => $params['serviceid']],
+                    [
+                        'sshKeyId' => $sshKey['registersshkeypairresponse']['keypair']['name'],
+                    ]
+                );
+            } catch (Exception $e) {
+                $fingerprint = violuke\RsaSshKeyFingerprint\FingerprintGenerator::getFingerprint($params['customfields']['sshKey']);
+                $keyId = $cloudstackProvisioner->ListSSHKeyPairs($fingerprint);
+                Capsule::table('mod_cloudstack2')->updateOrInsert(
+                    ['serviceId' => $params['serviceid']],
+                    [
+                        'sshKeyId' => $keyId['listsshkeypairsresponse']['sshkeypair'][0]['name'],
+                    ]
+                );
+            }
+        }
+    
        $updated_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
        if($updated_stat->serverId == "") {
-        $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['configoption1'],$params['serviceid'],$params['configoptions']['Template'],$params['configoption4'],$updated_stat->networkId, $updated_stat->ipAddressId,$params['configoption2']);
+        $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['configoption1'],$params['serviceid'],$params['configoptions']['Template'],$params['configoption4'],$updated_stat->networkId, $updated_stat->ipAddressId,$params['configoption2'],$updated_stat->sshKeyId);
         $portForwardingTCP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId, $newVM['deployvirtualmachineresponse']['id'], 'TCP');
         $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId, $newVM['deployvirtualmachineresponse']['id'], 'UDP');
         Capsule::table('mod_cloudstack2')->updateOrInsert(
             ['serviceId' => $params['serviceid']],
             [
                 'serverId' => $newVM['deployvirtualmachineresponse']['id'],
-                'portforwardTCPId' => $portForwarding['createportforwardingruleresponse']['id'],
-                'portforwardUDPId' => $portForwarding['createportforwardingruleresponse']['id'],
+                'vmInitialPassword' => $newVM['deployvirtualmachineresponse']['password'],
+                'portforwardTCPId' => $portForwardingTCP['createportforwardingruleresponse']['id'],
+                'portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],
             ]
             );
        } else {
