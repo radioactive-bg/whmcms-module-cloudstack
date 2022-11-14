@@ -254,6 +254,19 @@ function cloudstack2_CreateAccount(array $params) {
                 'portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],
             ]
             );
+            if(isset($newVM['deployvirtualmachineresponse']['jobid'])) {
+                $retry = 10;
+                $retry_c = 0;
+                do {
+                    $deploy_job_status = $cloudstackProvisioner->QueryAsyncJob($newVM['deployvirtualmachineresponse']['jobid']);
+                    if(isset($deploy_job_status['queryasyncjobresultresponse']['jobresult'])) {
+                        logModuleCall('provisioningmodule',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status);
+                        break;
+                    }
+                    sleep(10);
+                    $retry_c++;
+                } while ($retry_c < $retry);
+            }
             //WaitForPassword($newVM['deployvirtualmachineresponse']['jobid']);
 
        } else {
@@ -325,6 +338,9 @@ function cloudstack2_TerminateAccount(array $params){
             do {
                $job = $cloudstackProvisioner->QueryAsyncJob($destroyVmResponse['destroyvirtualmachineresponse']['jobid']);
                logModuleCall('provisioningmodule',__FUNCTION__,$params,$job,$job);
+               if(isset($job['queryasyncjobresultresponse']['jobresult']['null'])) {
+                break;
+               }
                sleep(10);
                $retry_c++;
             } while($retry_c < $retry);
