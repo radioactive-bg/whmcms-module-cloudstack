@@ -169,13 +169,16 @@ function ProvisionIngressFirewall($serviceid,$ipaddressid) {
     return true;
 }
 function WaitForPassword($jobId) { 
-    $cloudstackInfo = new CloudstackInfo();
+    $cloudstackProvisioner = new CloudstackProvisioner();
     $numAttempts = 30;
     $curAttempts = 0;
     logModuleCall('provisioningmodule',__FUNCTION__,$params,$jobId,$curAttempts);
     do {
         try {
             $password = $cloudstackProvisioner->QueryAsyncJobResult($jobId);
+            if($password['result'] == ""){
+                continue;
+            }
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$password,$password);
         } catch (Exception $e) {
             $curAttempts++;
@@ -254,10 +257,8 @@ function cloudstack2_CreateAccount(array $params) {
                 'portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],
             ]
             );
-            //WaitForPassword($newVM['deployvirtualmachineresponse']['jobid']);
-            logModuleCall('provisioningmodule',__FUNCTION__,$params,$newVM['deployvirtualmachineresponse']['jobid'],$newVM['deployvirtualmachineresponse']['jobid']);
-            $rrr = $cloudstackProvisioner->QueryAsyncJob($newVM['deployvirtualmachineresponse']['jobid']);
-            logModuleCall('provisioningmodule',__FUNCTION__,$params,$rrr,$rrr);
+            WaitForPassword($newVM['deployvirtualmachineresponse']['jobid']);
+
        } else {
         logModuleCall('provisioningmodule',__FUNCTION__,$params,$updated_stat,$updated_stat->serverId);
        }
