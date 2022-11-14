@@ -190,6 +190,7 @@ function WaitForPassword($jobId) {
 function cloudstack2_CreateAccount(array $params) {
     try {
        $cloudstackProvisioner = new CloudstackProvisioner();
+       $cloudstackInfo = new CloudstackInfo();
        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
        if(is_null($server_stat->networkId)){
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
@@ -225,7 +226,6 @@ function cloudstack2_CreateAccount(array $params) {
                     ]
                 );
             } catch (Exception $e) {
-                $cloudstackInfo = new CloudstackInfo();
                 $fingerprint = violuke\RsaSshKeyFingerprint\FingerprintGenerator::getFingerprint($params['customfields']['sshKey']);
                 $keyId = $cloudstackInfo->ListSSHKeyPairs($fingerprint);
                 Capsule::table('mod_cloudstack2')->updateOrInsert(
@@ -254,7 +254,10 @@ function cloudstack2_CreateAccount(array $params) {
                 'portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],
             ]
             );
-            WaitForPassword($newVM['deployvirtualmachineresponse']['jobid']);
+            //WaitForPassword($newVM['deployvirtualmachineresponse']['jobid']);
+            logModuleCall('provisioningmodule',__FUNCTION__,$params,$newVM['deployvirtualmachineresponse']['jobid'],$newVM['deployvirtualmachineresponse']['jobid']);
+            $rrr = $cloudstackInfo->QueryAsyncJob($newVM['deployvirtualmachineresponse']['jobid']);
+            logModuleCall('provisioningmodule',__FUNCTION__,$params,$rrr,$rrr);
        } else {
         logModuleCall('provisioningmodule',__FUNCTION__,$params,$updated_stat,$updated_stat->serverId);
        }
