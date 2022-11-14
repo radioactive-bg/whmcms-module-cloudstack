@@ -217,7 +217,7 @@ function cloudstack2_CreateAccount(array $params) {
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
-        logModuleCall('provisioningmodule',__FUNCTION__,$params,$ipAddress,$ipAddress);
+        logModuleCall('provisioningmodule',__FUNCTION__,$resp,$associateIpAddress,$ipAddress);
         ProvisionEgressFirewall($params['serviceid'],$resp['createnetworkresponse']['network']['id']);
         ProvisionIngressFirewall($params['serviceid'],$associateIpAddress['associateipaddressresponse']['id']);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
