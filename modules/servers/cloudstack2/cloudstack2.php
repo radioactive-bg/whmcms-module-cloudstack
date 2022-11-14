@@ -192,7 +192,7 @@ function cloudstack2_CreateAccount(array $params) {
                 $egressFirewallICMP = $cloudstackProvisioner->ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id'], 'ICMP');
             } catch (Exception $e) {
                 sleep(10);
-                continue
+                continue;
             }
             break;
         } while(is_null($egressFirewallTCP['createfirewallruleresponse']['id']) || is_null($egressFirewallUDP['createfirewallruleresponse']['id']) || is_null($egressFirewallICMP['createfirewallruleresponse']['id']));
