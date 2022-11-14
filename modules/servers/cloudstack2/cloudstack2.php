@@ -116,7 +116,7 @@ function cloudstack2_ConfigOptions() {
     }
 
 }
-function ProvisionEgressFirewall($networkId){
+function ProvisionEgressFirewall($serviceid, $networkId){
     $cloudstackProvisioner = new CloudstackProvisioner();
     $numAttempts = 10;
     $curAttempts = 0;
@@ -133,7 +133,7 @@ function ProvisionEgressFirewall($networkId){
         break;
     } while($curAttempts < $numAttempts);
     Capsule::table('mod_cloudstack2')->updateOrInsert(
-        ['serviceId' => $params['serviceid']],
+        ['serviceId' => $serviceid],
         [
             'egressFirewallTCPId' => $egressFirewallTCP['createegressfirewallruleresponse']['id'],
             'egressFirewallUDPId' => $egressFirewallUDP['createegressfirewallruleresponse']['id'],
@@ -142,7 +142,7 @@ function ProvisionEgressFirewall($networkId){
         );
     return true;
 }
-function ProvisionIngressFirewall($networkId) { 
+function ProvisionIngressFirewall($serviceid,$networkId) { 
     $cloudstackProvisioner = new CloudstackProvisioner();
     $numAttempts = 10;
     $curAttempts = 0;
@@ -159,7 +159,7 @@ function ProvisionIngressFirewall($networkId) {
         break;
     } while($curAttempts < $numAttempts);
     Capsule::table('mod_cloudstack2')->updateOrInsert(
-        ['serviceId' => $params['serviceid']],
+        ['serviceId' => $serviceid],
         [
             'firewallUDPId' => $firewallUDP['createfirewallruleresponse']['id'],
             'firewallTCPId' => $firewallTCP['createfirewallruleresponse']['id'],
@@ -177,8 +177,8 @@ function cloudstack2_CreateAccount(array $params) {
         $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         $ipAddress = $cloudstackProvisioner->ListPublicIpAddressesById($associateIpAddress['associateipaddressresponse']['id']);
-        $peg = ProvisionEgressFirewall($resp['createnetworkresponse']['network']['id']);
-        $pig = ProvisionIngressFirewall($resp['createnetworkresponse']['network']['id']);
+        $peg = ProvisionEgressFirewall($params['serviceid'],$resp['createnetworkresponse']['network']['id']);
+        $pig = ProvisionIngressFirewall($params['serviceid'],$resp['createnetworkresponse']['network']['id']);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
                 ['serviceId' => $params['serviceid']],
                 [
