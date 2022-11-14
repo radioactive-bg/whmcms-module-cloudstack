@@ -42,16 +42,17 @@ class CloudstackInfo extends CloudstackClient {
         return $client->listSSHKeyPairs[(['fingerprint' => $fingerprint])];
 
     }
-    public function QueryAsyncJobResult($jobId){
-        $client = parent::Client();
-        return $client->queryAsyncJobResult(['jobid' => $jobId]);
-    }
+
 }
 class CloudstackProvisioner extends CloudstackClient {
     public function ListPublicIpAddressesById($id) {
         $client = parent::Client();
         return $client->listPublicIpAddresses(['id' => $id]);
 
+    }
+    public function QueryAsyncJob($jobId){
+        $client = parent::Client();
+        return $client->queryAsyncJobResult(['jobid' => $jobId]);
     }
     public function ProvisionNewNetwork($prefix,$serviceid,$networkofferingid,$zoneid) { 
         $client = parent::Client();

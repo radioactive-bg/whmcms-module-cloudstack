@@ -256,7 +256,7 @@ function cloudstack2_CreateAccount(array $params) {
             );
             //WaitForPassword($newVM['deployvirtualmachineresponse']['jobid']);
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$newVM['deployvirtualmachineresponse']['jobid'],$newVM['deployvirtualmachineresponse']['jobid']);
-            $rrr = $cloudstackInfo->QueryAsyncJob($newVM['deployvirtualmachineresponse']['jobid']);
+            $rrr = $cloudstackProvisioner->QueryAsyncJob($newVM['deployvirtualmachineresponse']['jobid']);
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$rrr,$rrr);
        } else {
         logModuleCall('provisioningmodule',__FUNCTION__,$params,$updated_stat,$updated_stat->serverId);
