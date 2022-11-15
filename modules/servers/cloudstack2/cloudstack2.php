@@ -266,7 +266,7 @@ function cloudstack2_CreateAccount(array $params) {
                             ['id' => $params['serviceid']],
                             [
                                 'username' => 'ubuntu',
-                                'password' => $deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
+                                'password' => base64_encode($deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password']),
                             ]
                             );
                            // break;
@@ -296,7 +296,12 @@ function cloudstack2_CreateAccount(array $params) {
 }
 function cloudstack2_SuspendAccount(array $params) {
     try {
-        // Call the service's suspend function, using the values provided by
+        $cloudstackProvisioner = new CloudstackProvisioner();
+        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
+        if($server_stat->portforwardTCPId != "" ){
+            $cloudstackProvisioner->DeletePortForwardingRule($server_stat->portforwardTCPId);
+            $cloudstackProvisioner->DeletePortForwardingRule($server_stat->portforwardUDPId);
+        }
         // WHMCS in `$params`.
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
@@ -315,8 +320,12 @@ function cloudstack2_SuspendAccount(array $params) {
 }
 function cloudstack2_UnsuspendAccount(array $params) {
     try {
-        // Call the service's unsuspend function, using the values provided by
-        // WHMCS in `$params`.
+        $cloudstackProvisioner = new CloudstackProvisioner();
+        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
+        if($server_stat->portforwardTCPId == "" ){
+            $portForwardingTCP = $cloudstackProvisioner->ProvisionPortForwardingRule($server_stat->ipAddressId,$server_stat->serverId, 'TCP');
+            $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId,$server_stat->serverId, 'UDP');
+        }
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
         logModuleCall(
