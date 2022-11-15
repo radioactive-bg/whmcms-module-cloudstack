@@ -254,7 +254,8 @@ function cloudstack2_CreateAccount(array $params) {
                 'portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],
             ]
             );
-            if(isset($newVM['deployvirtualmachineresponse']['jobid'])) {
+            if($newVM['deployvirtualmachineresponse']['jobid'] != "") {
+                logModuleCall('provisioningmodule',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status);
                 $retry = 10;
                 $retry_c = 0;
                 do {
