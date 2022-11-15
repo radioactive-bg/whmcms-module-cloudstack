@@ -581,7 +581,7 @@ function cloudstack2_AdminServicesTabFields(array $params)
         // Call the service's function, using the values provided by WHMCS in
         // `$params`.
         $response = array();
-        logModuleCall('provisioningmodule',__FUNCTION__,$params,$e->getMessage(),$e->getTraceAsString());
+        //logModuleCall('provisioningmodule',__FUNCTION__,$params,$e->getMessage(),$e->getTraceAsString());
         $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
         // Return an array based on the function's response.
         return array(
