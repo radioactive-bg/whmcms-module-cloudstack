@@ -260,8 +260,6 @@ function cloudstack2_CreateAccount(array $params) {
                 $retry_c = 0;
                 do {
                     $deploy_job_status = $cloudstackProvisioner->QueryAsyncJob($newVM['deployvirtualmachineresponse']['jobid']);
-                    logModuleCall('provisioningmodule',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status);
-                    logModuleCall('provisioningmodule',__FUNCTION__,$deploy_job_status['queryasyncjobresultresponse']['jobresult'],$deploy_job_status['queryasyncjobresultresponse']['jobresult'],$deploy_job_status);
                     if($deploy_job_status['queryasyncjobresultresponse']['jobresult'] != "") {
                         logModuleCall('cl2cls2',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password']);
                         Capsule::table('tblhosting')->updateOrInsert(
@@ -277,7 +275,6 @@ function cloudstack2_CreateAccount(array $params) {
                     $retry_c++;
                 } while ($retry_c < $retry);
             }
-            //WaitForPassword($newVM['deployvirtualmachineresponse']['jobid']);
 
        } else {
         logModuleCall('provisioningmodule',__FUNCTION__,$params,$updated_stat,$updated_stat->serverId);
