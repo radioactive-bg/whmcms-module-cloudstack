@@ -268,7 +268,7 @@ function cloudstack2_CreateAccount(array $params) {
                             ['id' => $params['serviceid']],
                             [
                                 'username' => 'ubuntu',
-                                'dedicatedip' => $deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
+                                'password' => $deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
                             ]
                             );
                             break;
