@@ -262,8 +262,8 @@ function cloudstack2_CreateAccount(array $params) {
                     logModuleCall('provisioningmodule',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status);
                     logModuleCall('provisioningmodule',__FUNCTION__,$deploy_job_status['queryasyncjobresultresponse']['jobresult'],$deploy_job_status['queryasyncjobresultresponse']['jobresult'],$deploy_job_status);
                     if(isset($deploy_job_status['queryasyncjobresultresponse']['jobresult'])) {
-                        logModuleCall('provisioningmodule',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status);
-                        break;
+                        logModuleCall('provisioningmodule',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status['queryasyncjobresultresponse']['jobresult']);
+                        //break;
                     }
                     sleep(15);
                     $retry_c++;
