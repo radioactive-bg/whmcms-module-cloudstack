@@ -272,7 +272,7 @@ function cloudstack2_CreateAccount(array $params) {
                             Capsule::table('mod_cloudstack2')->updateOrInsert(
                                 ['serviceId' => $params['serviceid']],
                                 [
-                                    'vmInitialPassword' => $deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password']
+                                    'vmInitialPassword' => $deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
                                 ]
                                 );
                     }
