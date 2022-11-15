@@ -271,7 +271,7 @@ function cloudstack2_CreateAccount(array $params) {
                                 'password' => $deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
                             ]
                             );
-                            break;
+                           // break;
                     }
                     sleep(15);
                     $retry_c++;
