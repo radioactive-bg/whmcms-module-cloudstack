@@ -301,6 +301,13 @@ function cloudstack2_SuspendAccount(array $params) {
         if($server_stat->portforwardTCPId != "" ){
             $cloudstackProvisioner->DeletePortForwardingRule($server_stat->portforwardTCPId);
             $cloudstackProvisioner->DeletePortForwardingRule($server_stat->portforwardUDPId);
+            Capsule::table('mod_cloudstack2')->updateOrInsert(
+                ['serviceId' => $params['serviceid']],
+                [
+                    'portforwardTCPId' => "",
+                    'portforwardUDPId' => "",
+                ]
+                );
         }
         // WHMCS in `$params`.
     } catch (Exception $e) {
@@ -327,6 +334,13 @@ function cloudstack2_UnsuspendAccount(array $params) {
         } else {
             $portForwardingTCP = $cloudstackProvisioner->ProvisionPortForwardingRule($server_stat->ipAddressId,$server_stat->serverId, 'TCP');
             $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId,$server_stat->serverId, 'UDP');
+            Capsule::table('mod_cloudstack2')->updateOrInsert(
+                ['serviceId' => $params['serviceid']],
+                [
+                    'portforwardTCPId' => $portForwardingTCP['createportforwardingruleresponse']['id'],
+                    'portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],
+                ]
+                );
         }
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
