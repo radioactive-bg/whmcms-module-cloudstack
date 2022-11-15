@@ -269,7 +269,12 @@ function cloudstack2_CreateAccount(array $params) {
                                 'password' => base64_encode($deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password']),
                             ]
                             );
-                           // break;
+                            Capsule::table('mod_cloudstack2')->updateOrInsert(
+                                ['serviceId' => $params['serviceid']],
+                                [
+                                    'vmPassword' => $deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'];
+                                ]
+                                );
                     }
                     sleep(15);
                     $retry_c++;
@@ -576,16 +581,14 @@ function cloudstack2_AdminServicesTabFields(array $params)
         // Call the service's function, using the values provided by WHMCS in
         // `$params`.
         $response = array();
-
+        logModuleCall('provisioningmodule',__FUNCTION__,$params,$e->getMessage(),$e->getTraceAsString());
+        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
         // Return an array based on the function's response.
         return array(
-            'Number of Apples' => (int) $response['numApples'],
-            'Number of Oranges' => (int) $response['numOranges'],
+            'Server ID' => $server_stat->serverId,
+            'Network ID' => $server_stat->networkId,
+            'ServerPassword' => $server_stat->vmPassword,
             'Last Access Date' => date("Y-m-d H:i:s", $response['lastLoginTimestamp']),
-            'Something Editable' => '<input type="hidden" name="cloudstack2_original_uniquefieldname" '
-                . 'value="' . htmlspecialchars($response['textvalue']) . '" />'
-                . '<input type="text" name="cloudstack2_uniquefieldname"'
-                . 'value="' . htmlspecialchars($response['textvalue']) . '" />',
         );
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
