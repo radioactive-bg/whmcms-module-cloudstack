@@ -256,14 +256,14 @@ function cloudstack2_CreateAccount(array $params) {
             );
             if($newVM['deployvirtualmachineresponse']['jobid'] != "") {
                 logModuleCall('provisioningmodule',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status);
-                $retry = 10;
+                $retry = 15;
                 $retry_c = 0;
                 do {
                     $deploy_job_status = $cloudstackProvisioner->QueryAsyncJob($newVM['deployvirtualmachineresponse']['jobid']);
                     logModuleCall('provisioningmodule',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status);
                     logModuleCall('provisioningmodule',__FUNCTION__,$deploy_job_status['queryasyncjobresultresponse']['jobresult'],$deploy_job_status['queryasyncjobresultresponse']['jobresult'],$deploy_job_status);
-                    if(isset($deploy_job_status['queryasyncjobresultresponse']['jobresult'])) {
-                        logModuleCall('provisioningmodule',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password']);
+                    if($deploy_job_status['queryasyncjobresultresponse']['jobresult'] != "") {
+                        logModuleCall('cl2cls2',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password']);
                         Capsule::table('tblhosting')->updateOrInsert(
                             ['id' => $params['serviceid']],
                             [
