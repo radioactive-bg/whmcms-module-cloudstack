@@ -322,7 +322,9 @@ function cloudstack2_UnsuspendAccount(array $params) {
     try {
         $cloudstackProvisioner = new CloudstackProvisioner();
         $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
-        if($server_stat->portforwardTCPId == "" ){
+        if($server_stat->portforwardTCPId != "" ){
+            logModuleCall('provisioningmodule',__FUNCTION__,$params,$server_stat,$server_stat->portforwardTCPId);
+        } else {
             $portForwardingTCP = $cloudstackProvisioner->ProvisionPortForwardingRule($server_stat->ipAddressId,$server_stat->serverId, 'TCP');
             $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId,$server_stat->serverId, 'UDP');
         }
