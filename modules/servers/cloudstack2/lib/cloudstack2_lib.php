@@ -321,6 +321,24 @@ class CloudstackProvisioner extends CloudstackClient {
             }
             return $resp;
     }
+    public function DeleteEgressFirewallRule($id) {
+        $client = parent::Client();
+        try {
+            $resp = $client->deleteEgressFirewallRule([
+                'id' => $id,
+                ]);
+            } catch (Exception $e) {
+                logModuleCall(
+                    'provisioningmodule',
+                    __FUNCTION__,
+                    $params,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                );
+                return $e->getMessage();
+            }
+            return $resp;
+    }
     public function DeletePortForwardingRule($ruleid){
         $client = parent::Client();
         try {
