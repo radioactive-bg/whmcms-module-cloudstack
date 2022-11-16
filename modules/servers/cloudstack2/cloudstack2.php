@@ -608,7 +608,7 @@ function cloudstack2_AdminServicesTabFields(array $params)
             'UDP Firewall ID' => $server_stat->firewallUDPId,
             'TCP Firewall ID' => $server_stat->firewallTCPId,
             'ICMP Firewall ID' => $server_stat->firewallICMPId,
-            'ServerPassword' => $server_stat->vmPassword,
+            'ServerPassword' => $server_stat->vmInitialPassword,
             'Last Access Date' => date("Y-m-d H:i:s", $response['lastLoginTimestamp']),
         );
     } catch (Exception $e) {
