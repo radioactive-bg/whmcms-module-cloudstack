@@ -348,20 +348,34 @@ function cloudstack2_UnsuspendAccount(array $params) {
             logModuleCall('provisioningmodule',__FUNCTION__,$params,$server_stat,$server_stat->portforwardTCPId);
         } else {
             $portForwardingTCP = $cloudstackProvisioner->ProvisionPortForwardingRule($server_stat->ipAddressId,$server_stat->serverId, 'TCP');
-            $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($server_stat->ipAddressId,$server_stat->serverId, 'UDP');
-            $firewallUDP = $cloudstackProvisioner->ProvisionUDPFirewall($server_stat->ipAddressId);
-            $firewallTCP = $cloudstackProvisioner->ProvisionTCPFirewall($server_stat->ipAddressId);
-            //$firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($server_stat->ipAddressId);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
                 ['serviceId' => $params['serviceid']],
                 [
                     'portforwardTCPId' => $portForwardingTCP['createportforwardingruleresponse']['id'],
-                    'portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],
-                    'firewallUDPId' => $firewallUDP['createfirewallruleresponse']['id'],
-                    'firewallTCPId' => $firewallTCP['createfirewallruleresponse']['id'],
-                    'firewallICMPId' => $firewallICMP['createfirewallruleresponse']['id'],
                 ]
                 );
+            $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($server_stat->ipAddressId,$server_stat->serverId, 'UDP');
+            Capsule::table('mod_cloudstack2')->updateOrInsert(
+                ['serviceId' => $params['serviceid']],
+                [
+                    'portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],
+                ]
+                );
+            $firewallUDP = $cloudstackProvisioner->ProvisionUDPFirewall($server_stat->ipAddressId);
+            Capsule::table('mod_cloudstack2')->updateOrInsert(
+                ['serviceId' => $params['serviceid']],
+                [
+                    'firewallUDPId' => $firewallUDP['createfirewallruleresponse']['id'],
+                ]
+                );
+            $firewallTCP = $cloudstackProvisioner->ProvisionTCPFirewall($server_stat->ipAddressId);
+            Capsule::table('mod_cloudstack2')->updateOrInsert(
+                ['serviceId' => $params['serviceid']],
+                [
+                    'firewallTCPId' => $firewallTCP['createfirewallruleresponse']['id'],
+                ]
+                );
+            //$firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($server_stat->ipAddressId);
         }
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
