@@ -310,8 +310,6 @@ function cloudstack2_SuspendAccount(array $params) {
         if($server_stat->portforwardTCPId != "" ){
             $cloudstackProvisioner->DeletePortForwardingRule($server_stat->portforwardTCPId);
             $cloudstackProvisioner->DeletePortForwardingRule($server_stat->portforwardUDPId);
-            $cloudstackProvisioner->DeleteFirewallRule($server_stat->firewallTCPId);
-            $cloudstackProvisioner->DeleteFirewallRule($server_stat->firewallUDPId);
             $cloudstackProvisioner->DeleteFirewallRule($server_stat->firewallICMPId);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
                 ['serviceId' => $params['serviceid']],
