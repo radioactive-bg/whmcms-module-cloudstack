@@ -534,13 +534,13 @@ function cloudstack2_TestConnection(array $params){
     );
 }
 
-//function cloudstack2_AdminCustomButtonArray()
-//{
-//    return array(
-//        "Button 1 Display Value" => "buttonOneFunction",
-//        "Button 2 Display Value" => "buttonTwoFunction",
-//    );
-//}
+function cloudstack2_AdminCustomButtonArray()
+{
+    return array(
+        "Reboot server" => "buttonOneFunction",
+        "Reinstall server" => "buttonTwoFunction",
+    );
+}
 
 function cloudstack2_ClientAreaCustomButtonArray()
 {
@@ -603,6 +603,12 @@ function cloudstack2_AdminServicesTabFields(array $params)
         return array(
             'Server ID' => $server_stat->serverId,
             'Network ID' => $server_stat->networkId,
+            'PortForward TCP ID' => $server_stat->portForwardTcpId,
+            'PortForward UDP ID' => $server_stat->portForwardUdpId,
+            'PortForward ICMP ID' => $server_stat->portForwardIcmpId,
+            'UDP Firewall ID' => $server_stat->firewallUDPId,
+            'TCP Firewall ID' => $server_stat->firewallTCPId,
+            'ICMP Firewall ID' => $server_stat->firewallICMPId,
             'ServerPassword' => $server_stat->vmPassword,
             'Last Access Date' => date("Y-m-d H:i:s", $response['lastLoginTimestamp']),
         );
