@@ -259,23 +259,24 @@ function cloudstack2_CreateAccount(array $params) {
                     $deploy_job_status = $cloudstackProvisioner->QueryAsyncJob($newVM['deployvirtualmachineresponse']['jobid']);
                     if($deploy_job_status['queryasyncjobresultresponse']['jobresult'] != "") {
                         logModuleCall('cl2cls2',__FUNCTION__,$params,$deploy_job_status,$deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password']);
+                        $command = 'EncryptPassword';
+                        $postData = array(
+                            'password2' => $deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
+                        );
+                        $results = localAPI($command, $postData);
                         Capsule::table('tblhosting')->updateOrInsert(
                             ['id' => $params['serviceid']],
                             [
                                 'username' => 'ubuntu',
-                                'password' => base64_encode($deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password']),
+                                'password' => $results['password'],
                             ]
                             );
-                            $command = 'EncryptPassword';
-                            $postData = array(
-                                'password2' => $deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
-                            );
-                            $results = localAPI($command, $postData);
+
                             logModuleCall('cl2cls2',__FUNCTION__,$params,$results,$results);
                             Capsule::table('mod_cloudstack2')->updateOrInsert(
                                 ['serviceId' => $params['serviceid']],
                                 [
-                                    'vmInitialPassword' => $deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
+                                    'vmInitialPassword' => $results['password'],
                                 ]
                                 );
                     }
