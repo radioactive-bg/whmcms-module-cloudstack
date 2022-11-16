@@ -160,7 +160,7 @@ class CloudstackProvisioner extends CloudstackClient {
         $client = parent::Client();
         try {
             $resp = $client->createFirewallRule([
-                'protocol' => 'icmp',
+                'protocol' => 'ICMP',
                 'cidrlist' => '0.0.0.0/0',
                 'ipaddressid' => $ipaddressid,
                 ]);
