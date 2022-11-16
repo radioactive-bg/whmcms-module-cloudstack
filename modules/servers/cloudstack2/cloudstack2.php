@@ -351,7 +351,7 @@ function cloudstack2_UnsuspendAccount(array $params) {
             $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($server_stat->ipAddressId,$server_stat->serverId, 'UDP');
             $firewallUDP = $cloudstackProvisioner->ProvisionUDPFirewall($server_stat->ipAddressId);
             $firewallTCP = $cloudstackProvisioner->ProvisionTCPFirewall($server_stat->ipAddressId);
-            $firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($server_stat->ipAddressId);
+            //$firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($server_stat->ipAddressId);
             Capsule::table('mod_cloudstack2')->updateOrInsert(
                 ['serviceId' => $params['serviceid']],
                 [
