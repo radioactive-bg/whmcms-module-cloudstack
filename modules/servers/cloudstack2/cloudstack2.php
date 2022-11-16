@@ -480,39 +480,6 @@ function cloudstack2_ChangePackage(array $params){
 
     return 'success';
 }
-function cloudstack2_Renew(array $params){
-    try {
-        // Call the service's provisioning function, using the values provided
-        // by WHMCS in `$params`.
-        //
-        // A sample `$params` array may be defined as:
-        //
-        // ```
-        // array(
-        //     'domain' => 'The domain of the service to provision',
-        //     'username' => 'The username to access the new service',
-        //     'password' => 'The password to access the new service',
-        //     'configoption1' => 'The amount of disk space to provision',
-        //     'configoption2' => 'The new services secret key',
-        //     'configoption3' => 'Whether or not to enable FTP',
-        //     ...
-        // )
-        // ```
-    } catch (Exception $e) {
-        // Record the error in WHMCS's module log.
-        logModuleCall(
-            'provisioningmodule',
-            __FUNCTION__,
-            $params,
-            $e->getMessage(),
-            $e->getTraceAsString()
-        );
-
-        return $e->getMessage();
-    }
-
-    return 'success';
-}
 function cloudstack2_TestConnection(array $params){
     try {
         // Call the service's connection test function.
