@@ -309,20 +309,28 @@ function cloudstack2_SuspendAccount(array $params) {
         $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
         if($server_stat->portforwardTCPId != "" ){
             $cloudstackProvisioner->DeletePortForwardingRule($server_stat->portforwardTCPId);
-            $cloudstackProvisioner->DeletePortForwardingRule($server_stat->portforwardUDPId);
-            $cloudstackProvisioner->DeleteFirewallRule($server_stat->firewallICMPId);
-            Capsule::table('mod_cloudstack2')->updateOrInsert(
-                ['serviceId' => $params['serviceid']],
-                [
-                    'portforwardTCPId' => "",
-                    'portforwardUDPId' => "",
-                    'firewallTCPId' => "",
-                    'firewallUDPId' => "",
-                    'firewallICMPId' => "",
-                ]
-                );
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['portforwardTCPId' => "",]);
         }
-        // WHMCS in `$params`.
+        if($server_stat->portforwardUDPId != "" ){
+            $cloudstackProvisioner->DeletePortForwardingRule($server_stat->portforwardUDPId);
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['portforwardUDPId' => "",]);
+        }
+        if($server_stat->egressFirewallTCPId != "" ){
+            $cloudstackProvisioner->DeleteEgressFirewallRule($server_stat->egressFirewallTCPId);
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['egressFirewallTCPId' => "",]);
+        }
+        if($server_stat->egressFirewallUDPId != "" ){
+            $cloudstackProvisioner->DeleteEgressFirewallRule($server_stat->egressFirewallUDPId);
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['egressFirewallUDPId' => "",]);
+        }
+        if($server_stat->egressFirewallICMPId != "" ){
+            $cloudstackProvisioner->DeleteEgressFirewallRule($server_stat->egressFirewallICMPId);
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['egressFirewallICMPId' => "",]);
+        }
+        if($server_stat->firewallICMPId != "" ){
+            $cloudstackProvisioner->DeleteFirewallRule($server_stat->firewallICMPId);
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['firewallICMPId' => "",]);
+        }
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
         logModuleCall(
@@ -342,43 +350,33 @@ function cloudstack2_UnsuspendAccount(array $params) {
     try {
         $cloudstackProvisioner = new CloudstackProvisioner();
         $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
-        if($server_stat->portforwardTCPId != "" ){
-            logModuleCall('provisioningmodule',__FUNCTION__,$params,$server_stat,$server_stat->portforwardTCPId);
-        } else {
+        if(is_null($server_stat->egressFirewallTCPId)) {
+            $egressFirewallTCP = $cloudstackProvisioner->CreateEgressFirewallRule($server_stat->networkId,'TCP');
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['egressFirewallTCPId' => $egressFirewallTCP['createegressfirewallruleresponse']['id'],]);
+        }
+        if(is_null($server_stat->egressFirewallUDPId)) {
+            $egressFirewallUDP = $cloudstackProvisioner->CreateEgressFirewallRule($server_stat->networkId,'UDP');
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['egressFirewallUDPId' => $egressFirewallUDP['createegressfirewallruleresponse']['id'],]);
+        }
+        if(is_null($server_stat->egressFirewallICMPId)){
+            $egressFirewallICMP = $cloudstackProvisioner->CreateEgressFirewallRule($server_stat->networkId,'ICMP');
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['egressFirewallICMPId' => $egressFirewallICMP['createegressfirewallruleresponse']['id'],]);
+        }
+        if(is_null($server_stat->portforwardTCPId)){
             $portForwardingTCP = $cloudstackProvisioner->ProvisionPortForwardingRule($server_stat->ipAddressId,$server_stat->serverId, 'TCP');
-            Capsule::table('mod_cloudstack2')->updateOrInsert(
-                ['serviceId' => $params['serviceid']],
-                [
-                    'portforwardTCPId' => $portForwardingTCP['createportforwardingruleresponse']['id'],
-                ]
-                );
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['portforwardTCPId' => $portForwardingTCP['createportforwardingruleresponse']['id'],]);
+        }
+        if(is_null($server_stat->portforwardUDPId)){
             $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($server_stat->ipAddressId,$server_stat->serverId, 'UDP');
-            Capsule::table('mod_cloudstack2')->updateOrInsert(
-                ['serviceId' => $params['serviceid']],
-                [
-                    'portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],
-                ]
-                );
-
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],]);
+        }
+        if(is_null($server_stat->firewallICMPid)){
             $firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($server_stat->ipAddressId);
-            Capsule::table('mod_cloudstack2')->updateOrInsert(
-                ['serviceId' => $params['serviceid']],
-                [
-                    'firewallICMPid' => $firewallICMP['createfirewallruleresponse']['id'],
-                ]
-                );
-            
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['firewallICMPid' => $firewallICMP['createfirewallruleresponse']['id'],]);
         }
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
-        logModuleCall(
-            'provisioningmodule',
-            __FUNCTION__,
-            $params,
-            $e->getMessage(),
-            $e->getTraceAsString()
-        );
-
+        logModuleCall('provisioningmodule',__FUNCTION__,$params,$e->getMessage(),$e->getTraceAsString());
         return $e->getMessage();
     }
 
