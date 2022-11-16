@@ -538,15 +538,14 @@ function cloudstack2_TestConnection(array $params){
         'error' => $errorMsg,
     );
 }
-
 function cloudstack2_AdminCustomButtonArray()
 {
     return array(
-        "Reboot server" => "buttonOneFunction",
-        "Reinstall server" => "buttonTwoFunction",
+        "Reboot server"     => "rebootVmFunction",
+        "Shutdown server"   => "shutdownServerFunction",
+        "Start server"      => "startVMFunction",
     );
 }
-
 function cloudstack2_ClientAreaCustomButtonArray()
 {
     return array(
@@ -554,11 +553,12 @@ function cloudstack2_ClientAreaCustomButtonArray()
         "Action 2 Display Value" => "actionTwoFunction",
     );
 }
-function cloudstack2_buttonOneFunction(array $params)
+function cloudstack2_rebootVmFunction(array $params)
 {
     try {
-        // Call the service's function, using the values provided by WHMCS in
-        // `$params`.
+        $cloudstackProvisioner = new CloudstackProvisioner();
+        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
+        $cloudstackProvisioner->RebootVirtualMachine($server_stat->serverId);
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
         logModuleCall(
@@ -574,7 +574,48 @@ function cloudstack2_buttonOneFunction(array $params)
 
     return 'success';
 }
+function cloudstack2_shutdownVmFunction(array $params)
+{
+    try {
+        $cloudstackProvisioner = new CloudstackProvisioner();
+        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
+        $cloudstackProvisioner->ShutdownVirtualMachine($server_stat->serverId);
+    } catch (Exception $e) {
+        // Record the error in WHMCS's module log.
+        logModuleCall(
+            'provisioningmodule',
+            __FUNCTION__,
+            $params,
+            $e->getMessage(),
+            $e->getTraceAsString()
+        );
 
+        return $e->getMessage();
+    }
+
+    return 'success';
+}
+function cloudstack2_startVMFunction(array $params)
+{
+    try {
+        $cloudstackProvisioner = new CloudstackProvisioner();
+        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
+        $cloudstackProvisioner->StartVirtualMachine($server_stat->serverId);
+    } catch (Exception $e) {
+        // Record the error in WHMCS's module log.
+        logModuleCall(
+            'provisioningmodule',
+            __FUNCTION__,
+            $params,
+            $e->getMessage(),
+            $e->getTraceAsString()
+        );
+
+        return $e->getMessage();
+    }
+
+    return 'success';
+}
 function cloudstack2_actionOneFunction(array $params)
 {
     try {

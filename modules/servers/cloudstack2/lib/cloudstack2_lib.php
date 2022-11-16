@@ -53,6 +53,18 @@ class CloudstackProvisioner extends CloudstackClient {
         $client = parent::Client();
         return $client->queryAsyncJobResult(['jobid' => $jobId]);
     }
+    public function RebootVirtualMachine($vmId) {
+        $client = parent::Client();
+        return $client->rebootVirtualMachine(['id' => $vmId]);
+    }
+    public function ShutdownVirtualMachine($vmId) {
+        $client = parent::Client();
+        return $client->stopVirtualMachine(['id' => $vmId]);
+    }
+    public function StartVirtualMachine($vmId) {
+        $client = parent::Client();
+        return $client->startVirtualMachine(['id' => $vmId]);
+    }
     public function ProvisionNewNetwork($prefix,$serviceid,$networkofferingid,$zoneid) { 
         $client = parent::Client();
         try {
