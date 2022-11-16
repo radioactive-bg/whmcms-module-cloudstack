@@ -276,7 +276,7 @@ function cloudstack2_CreateAccount(array $params) {
                             Capsule::table('mod_cloudstack2')->updateOrInsert(
                                 ['serviceId' => $params['serviceid']],
                                 [
-                                    'vmInitialPassword' => $results['password'],
+                                    'vmInitialPassword' => $deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
                                 ]
                                 );
                     }
@@ -362,7 +362,14 @@ function cloudstack2_UnsuspendAccount(array $params) {
                 ]
                 );
 
-            //$firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($server_stat->ipAddressId);
+            $firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($server_stat->ipAddressId);
+            Capsule::table('mod_cloudstack2')->updateOrInsert(
+                ['serviceId' => $params['serviceid']],
+                [
+                    'firewallICMPid' => $firewallICMP['createfirewallruleresponse']['id'],
+                ]
+                );
+            
         }
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
