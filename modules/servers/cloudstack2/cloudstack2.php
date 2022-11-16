@@ -361,20 +361,7 @@ function cloudstack2_UnsuspendAccount(array $params) {
                     'portforwardUDPId' => $portForwardingUDP['createportforwardingruleresponse']['id'],
                 ]
                 );
-            $firewallUDP = $cloudstackProvisioner->ProvisionTCPFirewall($server_stat->ipAddressId);
-            Capsule::table('mod_cloudstack2')->updateOrInsert(
-                ['serviceId' => $params['serviceid']],
-                [
-                    'firewallTCPId' => $firewallUDP['createfirewallruleresponse']['id'],
-                ]
-                );
-            $firewallTCP = $cloudstackProvisioner->ProvisionUDPFirewall($server_stat->ipAddressId);
-            Capsule::table('mod_cloudstack2')->updateOrInsert(
-                ['serviceId' => $params['serviceid']],
-                [
-                    'firewallUDPId' => $firewallTCP['createfirewallruleresponse']['id'],
-                ]
-                );
+
             //$firewallICMP = $cloudstackProvisioner->ProvisionICMPFirewall($server_stat->ipAddressId);
         }
     } catch (Exception $e) {
