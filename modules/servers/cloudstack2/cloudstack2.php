@@ -608,10 +608,6 @@ function cloudstack2_AdminServicesTabFields(array $params)
         return array(
             'Server ID' => $server_stat->serverId,
             'Network ID' => $server_stat->networkId,
-            'PortForward TCP ID' => $server_stat->portforwardTCPId,
-            'PortForward UDP ID' => $server_stat->portforwardUDPId,
-            'UDP Firewall ID' => $server_stat->firewallUDPId,
-            'TCP Firewall ID' => $server_stat->firewallTCPId,
             'ICMP Firewall ID' => $server_stat->firewallICMPId,
             'ServerPassword' => $server_stat->vmInitialPassword,
             'Last Access Date' => date("Y-m-d H:i:s", $response['lastLoginTimestamp']),
