@@ -266,6 +266,12 @@ function cloudstack2_CreateAccount(array $params) {
                                 'password' => base64_encode($deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password']),
                             ]
                             );
+                            $command = 'EncryptPassword';
+                            $postData = array(
+                                'password2' => $deploy_job_status['queryasyncjobresultresponse']['jobresult']['virtualmachine']['password'],
+                            );
+                            $results = localAPI($command, $postData);
+                            logModuleCall('cl2cls2',__FUNCTION__,$params,$results,$results);
                             Capsule::table('mod_cloudstack2')->updateOrInsert(
                                 ['serviceId' => $params['serviceid']],
                                 [
