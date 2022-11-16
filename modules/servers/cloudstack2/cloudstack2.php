@@ -350,6 +350,16 @@ function cloudstack2_UnsuspendAccount(array $params) {
     try {
         $cloudstackProvisioner = new CloudstackProvisioner();
         $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
+        if($server_stat->portforwardTCPId == "" ){
+            logModuleCall('isempty',__FUNCTION__,$params,$server_stat->portforwardTCPId,$server_stat->portforwardTCPId);
+        } else {
+            logModuleCall('elseempty',__FUNCTION__,$params,$server_stat,$server_stat);
+        }
+        if(is_null($server_stat->portforwardTCPId)) {
+            logModuleCall('isnull',__FUNCTION__,$params,$server_stat->portforwardTCPId,$server_stat->portforwardTCPId);
+        }else {
+            logModuleCall('elseisnull',__FUNCTION__,$params,$server_stat->portforwardTCPId,$server_stat->portforwardTCPId);
+        }
         if(is_null($server_stat->egressFirewallTCPId)) {
             $egressFirewallTCP = $cloudstackProvisioner->CreateEgressFirewallRule($server_stat->networkId,'TCP');
             Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['egressFirewallTCPId' => $egressFirewallTCP['createegressfirewallruleresponse']['id'],]);
