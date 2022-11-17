@@ -119,7 +119,7 @@ function cloudstack2_ConfigOptions() {
                 'Description' => 'Enter base64 encoded cloud-init provisioning template here',
                 'SimpleMode' => true,
             ),
-            )
+            
         );  
     } catch (Exception $e) {
         throw new \Exception($e->getMessage());
