@@ -168,7 +168,7 @@ function cloudstack2_CreateAccount(array $params) {
        $cloudstackProvisioner = new CloudstackProvisioner();
        $server_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
        if(is_null($server_stat->networkId)){
-        $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
+        $resp = $cloudstackProvisioner->ProvisionNewNetwork($params['clientdetails']['uuid'],$params['configoption1'],$params['serviceid'], $params['configoption3'], $params['configoption4']);
         $associateIpAddress = $cloudstackProvisioner->ProvisionNewIP($resp['createnetworkresponse']['network']['id']);
         if(isset($associateIpAddress['associateipaddressresponse']['jobid'])) {
             $retry = 2;
@@ -214,7 +214,7 @@ function cloudstack2_CreateAccount(array $params) {
        }
        if($params['customfields']['sshKey'] != "" ){
             try {
-                $sshKey = $cloudstackProvisioner->ProvisionNewSSHKeyPair($params['serviceid'],$params['configoption1'],$params['accountid'],$params['customfields']['sshKey']);
+                $sshKey = $cloudstackProvisioner->ProvisionNewSSHKeyPair($params['clientdetails']['uuid'],$params['serviceid'],$params['configoption1'],$params['accountid'],$params['customfields']['sshKey']);
                 logModuleCall('provisioningmodule',__FUNCTION__,$sshKey,$sshKey,$sshKey);
                 Capsule::table('mod_cloudstack2')->updateOrInsert(
                     ['serviceId' => $params['serviceid']],
@@ -236,7 +236,7 @@ function cloudstack2_CreateAccount(array $params) {
     
        $updated_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
        if($updated_stat->serverId == "") {
-        $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['configoption1'],$params['serviceid'],$params['configoptions']['Template'],$params['configoption4'],$updated_stat->networkId, $updated_stat->ipAddressId,$params['configoption2'],$updated_stat->sshKeyId);
+        $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['clientdetails']['uuid'],$params['configoption1'],$params['serviceid'],$params['configoptions']['Template'],$params['configoption4'],$updated_stat->networkId, $updated_stat->ipAddressId,$params['configoption2'],$updated_stat->sshKeyId);
         $portForwardingTCP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId, $newVM['deployvirtualmachineresponse']['id'], 'TCP');
         $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId, $newVM['deployvirtualmachineresponse']['id'], 'UDP');
         logModuleCall('provisioningmodule',__FUNCTION__,$params,$newVM,$newVM);
@@ -414,18 +414,20 @@ function cloudstack2_TerminateAccount(array $params){
                 logModuleCall('provisioningmodule',__FUNCTION__,$params,$e->getMessage(),$e->getTraceAsString());
             }
         }
-        
-        $resp = $cloudstackProvisioner->DeleteNetwork($server_status->networkId);
-        if(isset($resp['deletenetworkresponse']['jobid'])) {
-            Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->delete();
-            Capsule::table('tblhosting')->updateOrInsert(
-                ['id' => $params['serviceid']],
-                [
-                    'username' => 'ubuntu',
-                    'dedicatedip' => "",
-                ]
-            );
-        } 
+        if($server_status->networkId != "" ) {
+            $resp = $cloudstackProvisioner->DeleteNetwork($server_status->networkId);
+            if(isset($resp['deletenetworkresponse']['jobid'])) {
+                Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->delete();
+                Capsule::table('tblhosting')->updateOrInsert(
+                    ['id' => $params['serviceid']],
+                    [
+                        'username' => 'ubuntu',
+                        'dedicatedip' => "",
+                    ]
+                );
+            } 
+        }
+
          
     } catch (Exception $e) {
         logModuleCall('provisioningmodule',__FUNCTION__,$params,$e->getMessage(),$e->getTraceAsString());

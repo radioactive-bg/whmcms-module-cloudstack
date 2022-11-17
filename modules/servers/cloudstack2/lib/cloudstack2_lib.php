@@ -49,6 +49,7 @@ class CloudstackProvisioner extends CloudstackClient {
         $client = parent::Client();
         return $client->listPublicIpAddresses(['id' => $id]);
     }
+    public function GenerateUserData()
     public function QueryAsyncJob($jobId){
         $client = parent::Client();
         return $client->queryAsyncJobResult(['jobid' => $jobId]);
@@ -65,11 +66,11 @@ class CloudstackProvisioner extends CloudstackClient {
         $client = parent::Client();
         return $client->startVirtualMachine(['id' => $vmId]);
     }
-    public function ProvisionNewNetwork($prefix,$serviceid,$networkofferingid,$zoneid) { 
+    public function ProvisionNewNetwork($client_uuid,$prefix,$serviceid,$networkofferingid,$zoneid) { 
         $client = parent::Client();
         try {
             $resp = $client->createNetwork([
-                'displaytext' => $prefix . '-' . $serviceid . '-network',
+                'displaytext' => $prefix . '-' . $serviceid . '-' . $client_uuid .'-network',
                 'name' => $serviceid . '_network',
                 'networkofferingid' => $networkofferingid,
                 'zoneid' => $zoneid
@@ -188,11 +189,11 @@ class CloudstackProvisioner extends CloudstackClient {
             }
             return $resp;
     }
-    public function ProvisionNewVirtualMachine($prefix, $serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid,$sshkeyid) {
+    public function ProvisionNewVirtualMachine($client_uuid,$prefix, $serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid,$sshkeyid) {
         $client = parent::Client();
         try {
             $resp = $client->deployVirtualMachine([
-                'displayname' => $prefix . '-' . $serviceid . '-vm',
+                'displayname' => $prefix . '-' . $serviceid . '-' . $client_uuid . '-vm',
                 'name' => $prefix . '-' . $serviceid . '-vm',
                 'templateid' => $templateid,
                 'zoneid' => $zoneid,
@@ -236,11 +237,11 @@ class CloudstackProvisioner extends CloudstackClient {
             }
             return $resp;
     }
-    public function ProvisionNewSSHKeyPair($serviceid,$prefix,$accId,$sshpublickey) {
+    public function ProvisionNewSSHKeyPair($client_uuid,$serviceid,$prefix,$accId,$sshpublickey) {
         $client = parent::Client();
         try {
             $resp = $client->registerSSHKeyPair([
-                'name' => $prefix . '-' . $accId . '-' . $serviceid . '-keypair',
+                'name' => $prefix . '-' . $accId . '-' . $serviceid . '-'. $client_uuid . '-keypair',
                 'publickey' => $sshpublickey,
 
                 ]);
