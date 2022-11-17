@@ -388,8 +388,12 @@ function cloudstack2_TerminateAccount(array $params){
 
         $cloudstackProvisioner = new CloudstackProvisioner();
         $server_status = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first(); 
-        $destroyVmResponse = $cloudstackProvisioner->DeleteVirtualMachine($server_status->serverId);
-        logModuleCall('provisioningmodule',__FUNCTION__,$params,$destroyVmResponse,$destroyVmResponse);
+        if ($server_status->serverId != "") {
+            $destroyVmResponse = $cloudstackProvisioner->DeleteVirtualMachine($server_status->serverId);
+            logModuleCall('provisioningmodule',__FUNCTION__,$params,$destroyVmResponse,$destroyVmResponse);
+            Capsule::table('mod_cloudstack2')->updateOrInsert(['serviceId' => $params['serviceid']],['serverId' => "",]);
+        }
+        
         if(isset($destroyVmResponse['destroyvirtualmachineresponse']['jobid'])){
             $retry = 10;
             $retry_c = 0;
@@ -403,7 +407,14 @@ function cloudstack2_TerminateAccount(array $params){
                $retry_c++;
             } while($retry_c < $retry);
         }
-        $destroyKeyResponse = $cloudstackProvisioner->DeleteSSHKeyPair($server_status->sshKeyId);
+        if($server_status->sshKeyId != "" ) {
+            try {
+                $destroyKeyResponse = $cloudstackProvisioner->DeleteSSHKeyPair($server_status->sshKeyId);
+            } catch(Exception $e){ 
+                logModuleCall('provisioningmodule',__FUNCTION__,$params,$e->getMessage(),$e->getTraceAsString());
+            }
+        }
+        
         $resp = $cloudstackProvisioner->DeleteNetwork($server_status->networkId);
         if(isset($resp['deletenetworkresponse']['jobid'])) {
             Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->delete();
