@@ -49,7 +49,6 @@ class CloudstackProvisioner extends CloudstackClient {
         $client = parent::Client();
         return $client->listPublicIpAddresses(['id' => $id]);
     }
-    public function GenerateUserData()
     public function QueryAsyncJob($jobId){
         $client = parent::Client();
         return $client->queryAsyncJobResult(['jobid' => $jobId]);
