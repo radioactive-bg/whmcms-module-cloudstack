@@ -188,7 +188,7 @@ class CloudstackProvisioner extends CloudstackClient {
             }
             return $resp;
     }
-    public function ProvisionNewVirtualMachine($client_uuid,$prefix, $serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid,$sshkeyid) {
+    public function ProvisionNewVirtualMachine($userdata, $client_uuid,$prefix, $serviceid,$templateid,$zoneid,$networkid,$ipaddressid,$serviceofferingid,$sshkeyid) {
         $client = parent::Client();
         try {
             $resp = $client->deployVirtualMachine([
@@ -199,6 +199,7 @@ class CloudstackProvisioner extends CloudstackClient {
                 'networkids' => $networkid,
                 'serviceofferingid' => $serviceofferingid,
                 'keypair' => $keypair,
+                'userdata' => $userdata,
                 ]);
             } catch (Exception $e) {
                 logModuleCall(

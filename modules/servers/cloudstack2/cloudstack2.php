@@ -246,7 +246,7 @@ function cloudstack2_CreateAccount(array $params) {
     
        $updated_stat = Capsule::table('mod_cloudstack2')->where('serviceId', $params['serviceid'])->where('accountId' ,$params['accountid'])->first();
        if($updated_stat->serverId == "") {
-        $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['clientdetails']['uuid'],$params['configoption1'],$params['serviceid'],$params['configoptions']['Template'],$params['configoption4'],$updated_stat->networkId, $updated_stat->ipAddressId,$params['configoption2'],$updated_stat->sshKeyId);
+        $newVM = $cloudstackProvisioner->ProvisionNewVirtualMachine($params['configoption5'],$params['clientdetails']['uuid'],$params['configoption1'],$params['serviceid'],$params['configoptions']['Template'],$params['configoption4'],$updated_stat->networkId, $updated_stat->ipAddressId,$params['configoption2'],$updated_stat->sshKeyId);
         $portForwardingTCP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId, $newVM['deployvirtualmachineresponse']['id'], 'TCP');
         $portForwardingUDP = $cloudstackProvisioner->ProvisionPortForwardingRule($updated_stat->ipAddressId, $newVM['deployvirtualmachineresponse']['id'], 'UDP');
         logModuleCall('provisioningmodule',__FUNCTION__,$params,$newVM,$newVM);
