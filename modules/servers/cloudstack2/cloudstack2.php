@@ -114,7 +114,7 @@ function cloudstack2_ConfigOptions() {
                 'FriendlyName' => "Provisioning Template",
                 'Type' => 'textarea',
                 'Rows' => '3',
-                'Cols' => '50'
+                'Cols' => '50',
                 'Default' => "",
                 'Description' => 'Enter base64 encoded cloud-init provisioning template here',
                 'SimpleMode' => true,
