@@ -110,6 +110,16 @@ function cloudstack2_ConfigOptions() {
                 'Loader' => 'cloudstack2_LoadZones',
                 'SimpleMode' => true,
             ),
+            'Provisioning Template' => array(
+                'FriendlyName' => "Provisioning Template",
+                'Type' => 'textarea',
+                'Rows' => '3',
+                'Cols' => '50'
+                'Default' => "",
+                'Description' => 'Enter base64 encoded cloud-init provisioning template here',
+                'SimpleMode' => true,
+            ),
+            )
         );  
     } catch (Exception $e) {
         throw new \Exception($e->getMessage());
