@@ -192,7 +192,7 @@ class CloudstackProvisioner extends CloudstackClient {
         $client = parent::Client();
         try {
             $resp = $client->deployVirtualMachine([
-                'displayname' => $prefix . '-' . $serviceid . '-' . $client_uuid . '-vm',
+                'displayname' => $prefix . '-' . $serviceid . '-vm',
                 'name' => $prefix . '-' . $serviceid . '-vm',
                 'templateid' => $templateid,
                 'zoneid' => $zoneid,
