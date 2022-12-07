@@ -224,7 +224,7 @@ function cloudstack2_CreateAccount(array $params) {
        }
        logModuleCall('provisioningmodule',__FUNCTION__,$params,$params['customfields']['sshKey'],$params['customfields']['sshKey']);
 
-       if($params['customfields']['sshKey'] != "" ){
+       if(isset($params['customfields']['sshKey'])){
             try {
                 $sshKey = $cloudstackProvisioner->ProvisionNewSSHKeyPair($params['clientsdetails']['uuid'],$params['serviceid'],$params['configoption1'],$params['accountid'],$params['customfields']['sshKey']);
                 logModuleCall('provisioningmodule',__FUNCTION__,$sshKey,$sshKey,$sshKey);
